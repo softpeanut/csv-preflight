@@ -15,6 +15,7 @@ const koreanTemplate = readFileSync(
 const robots = readFileSync(new URL("./robots.txt", import.meta.url), "utf8");
 const sitemap = readFileSync(new URL("./sitemap.xml", import.meta.url), "utf8");
 const caseStudy = readFileSync(new URL("./case-study.html", import.meta.url), "utf8");
+const csvCiCaseStudy = readFileSync(new URL("./csv-ci-case-study.html", import.meta.url), "utf8");
 const caseInput = readFileSync(new URL("./examples/messy-contacts.csv", import.meta.url), "utf8");
 const caseOutput = readFileSync(new URL("./examples/normalized-contacts.csv", import.meta.url), "utf8");
 const caseReport = readFileSync(new URL("./examples/preflight-errors.csv", import.meta.url), "utf8");
@@ -206,6 +207,7 @@ test("publishes truthful search metadata for every public page", () => {
     "https://softpeanut.github.io/csv-preflight/ko.html",
     "https://softpeanut.github.io/csv-preflight/article.html",
     "https://softpeanut.github.io/csv-preflight/case-study.html",
+    "https://softpeanut.github.io/csv-preflight/csv-ci-case-study.html",
     "https://softpeanut.github.io/csv-preflight/pro-terms.html",
     "https://softpeanut.github.io/csv-preflight/pro-terms-ko.html",
     "https://softpeanut.github.io/csv-preflight/shopify-csv-guide-ko.html",
@@ -229,4 +231,17 @@ test("case study downloads are exact outputs of the public analyzer", () => {
   assert.match(caseStudy, /No row is silently deleted/);
   assert.match(caseStudy, /agreed before work starts/);
   assert.doesNotMatch(caseStudy, /customer|client result|guaranteed/i);
+});
+
+test("public CI case study preserves evidence and sales boundaries", () => {
+  assert.match(page, /csv-ci-case-study\.html/);
+  assert.match(githubActionGuide, /csv-ci-case-study\.html/);
+  assert.match(csvCiCaseStudy, /1,583/);
+  assert.match(csvCiCaseStudy, /<strong>10<\/strong>exact duplicates reported/);
+  assert.match(csvCiCaseStudy, /1,573/);
+  assert.match(csvCiCaseStudy, /CDFER\/jlcpcb-parts-database\/pull\/11/);
+  assert.match(csvCiCaseStudy, /open contribution, not a customer result or an accepted upstream change/);
+  assert.match(csvCiCaseStudy, /full multi-gigabyte generation process was not run locally/);
+  assert.match(csvCiCaseStudy, /template=ci-setup\.yml/);
+  assert.doesNotMatch(csvCiCaseStudy, /customer success|production-proven|guaranteed|adopted upstream/i);
 });

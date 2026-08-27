@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A reproducible public CSV check found 10 exact duplicate rows before a generated dataset was published. See the evidence, proposed fix, and CI boundary.">
+  <link rel="canonical" href="https://softpeanut.github.io/csv-preflight/csv-ci-case-study.html">
+  <title>Finding Duplicate CSV Rows Before Publication — CSV Preflight</title>
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .article{max-width:780px;margin:0 auto;padding:3rem 1.25rem 5rem}.article h1{font-size:clamp(2rem,7vw,3.7rem);line-height:1.04}.article h2{margin-top:2.5rem}.article p,.article li{line-height:1.75}.article .lede{font-size:1.2rem;color:#495164}.article .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:2rem 0}.article .fact{padding:1rem;border:1px solid #d7dce5;border-radius:.6rem;background:#f7f8fa}.article .fact strong{display:block;font-size:1.6rem}.article .note{padding:1rem 1.2rem;border-left:4px solid #3659d9;background:#eef2ff}.article nav{margin-bottom:2rem}
+  </style>
+</head>
+<body>
+<main class="article">
+  <nav><a href="./">Try CSV Preflight</a> · <a href="validate-csv-github-actions.html">GitHub Actions guide</a> · <a href="ci-setup-terms.html">$99 setup terms</a></nav>
+  <article>
+    <span class="eyebrow">PUBLIC REPRODUCTION · 2026-08-27</span>
+    <h1>Ten duplicate rows caught before publication</h1>
+    <p class="lede">A generated open-source parts database provided a real test of the free Action: inspect the output, report exact duplicates, and block publication without guessing which records to rewrite.</p>
+
+    <div class="facts">
+      <div class="fact"><strong>1.1 MB</strong>public CSV snapshot</div>
+      <div class="fact"><strong>1,583</strong>data rows checked</div>
+      <div class="fact"><strong>10</strong>exact duplicates reported</div>
+      <div class="fact"><strong>0</strong>issues after exact-row dedupe</div>
+    </div>
+
+    <h2>What was checked</h2>
+    <p>The public <a href="https://github.com/CDFER/jlcpcb-parts-database">CDFER/jlcpcb-parts-database</a> project generates a CSV and publishes it through GitHub Pages. Running the released CSV Preflight implementation against the live snapshot found 10 data rows that were byte-for-byte equivalent after CSV parsing. The report identified their row numbers; it did not delete or merge them.</p>
+
+    <h2>The narrow proposed fix</h2>
+    <p><a href="https://github.com/CDFER/jlcpcb-parts-database/pull/11">Public pull request #11</a> adds a full-row <code>drop_duplicates()</code> call after the generator merges its data, then runs the Action before the Pages artifact is uploaded. On the reproduced snapshot, this reduced 1,583 rows to 1,573 and the validator reported no remaining structural issue.</p>
+
+    <div class="note"><strong>Status boundary:</strong> the pull request is an open contribution, not a customer result or an accepted upstream change. The repository's full multi-gigabyte generation process was not run locally, and the PR says so.</div>
+
+    <h2>Why exact duplicates are the safe first boundary</h2>
+    <p>Rows that merely share a part number or description may still represent distinct records. Automatically merging near-duplicates would introduce a business rule that a structural validator cannot justify. This check reports exact repeated rows; the owning project decides whether and where deduplication belongs.</p>
+
+    <h2>Reusable workflow pattern</h2>
+    <ol>
+      <li>Generate or update the CSV.</li>
+      <li>Run the Action using an immutable commit SHA.</li>
+      <li>Keep the issue report as an artifact even when validation fails.</li>
+      <li>Upload or publish data only after the check passes.</li>
+    </ol>
+
+    <p>The complete copy-ready workflow is in the <a href="validate-csv-github-actions.html">GitHub Actions guide</a>. It validates one generic UTF-8 CSV up to 10 MiB on the runner, requires no API key, and does not upload the input. Passing checks CSV structure only; it does not guarantee an importer accepts the file.</p>
+
+    <section class="pro">
+      <div><span class="eyebrow">FIXED SCOPE · USD 99</span><h2>Want this wired into one repository?</h2><p>One public repository or sanitized minimal reproduction, one CSV path, one workflow, diagnostic artifacts, a usage note, and one revision. Scope is confirmed in writing before payment.</p></div>
+      <a href="https://github.com/softpeanut/csv-preflight/issues/new?template=ci-setup.yml" target="_blank" rel="noopener">Check setup fit ↗</a>
+    </section>
+  </article>
+</main>
+</body>
+</html>
