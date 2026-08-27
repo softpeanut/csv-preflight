@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Build a dependency-free CSV preflight pipeline with a state-machine parser, encoding gates, structural diagnostics, and explicit repair boundaries.">
+  <title>CSV Is a State Machine: Parsing and Repairing Messy Imports in the Browser</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .article{max-width:760px;margin:0 auto;padding:3rem 1.25rem 5rem}.article h1{font-size:clamp(2rem,7vw,3.7rem);line-height:1.04}.article h2{margin-top:2.6rem}.article p,.article li{line-height:1.75}.article pre{overflow-x:auto;padding:1rem;border:1px solid #d7dce5;border-radius:.6rem;background:#f7f8fa}.article code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.article .lede{font-size:1.2rem;color:#495164}.article .note{padding:1rem 1.2rem;border-left:4px solid #3659d9;background:#eef2ff}.article nav{margin-bottom:2rem}
+  </style>
+</head>
+<body>
+<main class="article">
+  <nav><a href="./">Try CSV Preflight</a> · <a href="https://github.com/softpeanut/csv-preflight">Source and tests</a></nav>
+  <article>
+    <h1>CSV Is a State Machine</h1>
+    <p class="lede">Parsing and repairing messy imports in the browser without hiding data loss.</p>
+
+    <p>A CSV file looks like lines split by commas until a customer pastes an address containing a comma, an export includes a quoted newline, or a spreadsheet changes the delimiter for a different locale. At that point, a convenient <code>text.split('\n').map(row =&gt; row.split(','))</code> is not merely incomplete. It silently changes the table.</p>
+
+    <p>This article develops a small browser-only preflight pipeline. It detects common encoding failures, chooses a likely delimiter, parses quoted records with a state machine, reports structural problems, and produces normalized CSV. The important design choice is that diagnosis and repair are separate. A tool should say what it inferred, what it changed, and what remains ambiguous.</p>
+
+    <h2>Start with a narrow contract</h2>
+
+    <p>“Support CSV” is too vague to test. The implementation accepts UTF-8 text with an optional byte-order mark and recognizes comma, tab, semicolon, or pipe delimiters. It supports quoted fields, escaped quotes, and newlines inside quoted fields. It reports empty or duplicate headers, rows with unexpected column counts, and duplicate data rows.</p>
+
+    <p>It deliberately does not guess character encodings beyond surfacing UTF-16 markers, stream multi-gigabyte files, infer column types, or decide which duplicate row is authoritative. Those are separate product decisions with different failure modes. Keeping the boundary explicit prevents a normalizer from becoming a quiet data-loss machine.</p>
+
+    <h2>Gate bytes before parsing text</h2>
+
+    <p>A browser <code>File</code> can be read as an <code>ArrayBuffer</code>. That is the right moment to inspect byte signatures. Once malformed bytes have already been decoded with replacement characters, the parser cannot reconstruct what was lost.</p>
+
+    <pre><code>export function detectEncoding(bytes) {
+  if (bytes[0] === 0xef &amp;&amp; bytes[1] === 0xbb &amp;&amp; bytes[2] === 0xbf)
+    return { encoding: "UTF-8 BOM", offset: 3, supported: true };
+  if (bytes[0] === 0xff &amp;&amp; bytes[1] === 0xfe)
+    return { encoding: "UTF-16 LE", offset: 2, supported: false };
+  if (bytes[0] === 0xfe &amp;&amp; bytes[1] === 0xff)
+    return { encoding: "UTF-16 BE", offset: 2, supported: false };
+  try {
+    new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    return { encoding: "UTF-8 (no BOM)", offset: 0, supported: true };
+  } catch {
+    return { encoding: "Unknown / not valid UTF-8", offset: 0, supported: false };
+  }
+}</code></pre>
+
+    <p>The <code>fatal</code> option matters. Without it, <code>TextDecoder</code> may substitute the Unicode replacement character and make a damaged identifier look valid. The browser API behavior is documented by <a href="https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder">MDN</a>. Rejecting UTF-16 is not a claim that UTF-16 is invalid; it is an honest statement that this small tool has no conversion contract for it.</p>
+
+    <h2>Delimiter detection is a ranking problem</h2>
+
+    <p>A delimiter guess should be evidence that the parser exposes, not a fact it pretends to know. A useful lightweight heuristic samples up to twenty non-empty physical lines and scores each candidate by consistency and useful width. A candidate that produces the same number of fields repeatedly is stronger than one that appears often but produces erratic widths.</p>
+
+    <p>Physical-line sampling has a known weakness: a quoted field can span lines. A line inside that field may contain commas that are content, not separators. The production parser handles that case correctly, but this cheap detector can still rank the wrong delimiter. The UI therefore displays the inferred delimiter before the user downloads normalized output. The current prototype does not yet provide an override, so ambiguous files should not be normalized.</p>
+
+    <div class="note"><strong>General rule:</strong> if an inference can change the table shape, surface it as a choice. Confidence hidden inside a helper function is not a user contract.</div>
+
+    <h2>Parse characters with explicit state</h2>
+
+    <p>The parser only needs a few states, but they must be explicit. Track the current field, current row, whether the cursor is inside a quoted field, and whether the last character was a carriage return. Each character then has a bounded meaning.</p>
+
+    <pre><code>for (let i = 0; i &lt; text.length; i += 1) {
+  const char = text[i];
+  if (insideQuotes) {
+    if (char === '"' &amp;&amp; text[i + 1] === '"') {
+      field += '"';
+      i += 1;
+    } else if (char === '"') {
+      insideQuotes = false;
+    } else {
+      field += char;
+    }
+    continue;
+  }
+  if (char === '"' &amp;&amp; field.length === 0) insideQuotes = true;
+  else if (char === delimiter) finishField();
+  else if (char === '\n') finishRow();
+  else if (char !== '\r') field += char;
+}</code></pre>
+
+    <p>Inside quotes, a delimiter is ordinary data and a newline belongs to the field. Two consecutive quote characters represent one literal quote. Outside quotes, the delimiter finishes a field and the record separator finishes a row. A quote that begins after unquoted content is not automatically treated as an opening quote; doing so would reinterpret malformed data.</p>
+
+    <p>The parser also has to define end-of-file behavior. It flushes the final field and row even when the file does not end with a newline. If the file ends while still inside quotes, it reports an unclosed-quote error. Returning partial rows while hiding that error would make downstream validation misleading.</p>
+
+    <p><a href="https://www.rfc-editor.org/rfc/rfc4180">RFC 4180</a> is a useful reference for the common quoted-field shape, but real exports vary. The implementation treats its supported dialect as a local contract rather than claiming universal CSV compliance.</p>
+
+    <h2>Validate structure before values</h2>
+
+    <p>Once rows exist, structural checks are cheap and explainable. The first row is the header. Trimmed empty names are reported by column position. Duplicate headers are compared after trimming because two visually identical names should not create competing keys. Every later row is compared with the header width.</p>
+
+    <p>Duplicate-row detection uses a collision-safe representation rather than joining values with a delimiter that may itself occur in a field. Serializing the row array to JSON is sufficient for this bounded client-side tool. A streaming production importer would likely use an incremental hash plus collision confirmation to avoid retaining every row.</p>
+
+    <p>These checks should produce issues, not automatic deletions. A duplicate may be a legitimate repeated transaction. A short row may encode omitted trailing values, or it may be corruption. Preflight can show the evidence and preserve the original row number; only an importer-specific policy can decide what the data means.</p>
+
+    <h2>Normalization must be lossless within the contract</h2>
+
+    <p>Serialization is simpler than parsing but still needs one invariant: parsing the normalized output must recover the same field strings. Quote any field that contains the selected delimiter, a quote, carriage return, or newline. Inside a quoted field, double every quote.</p>
+
+    <pre><code>function escapeField(value, delimiter) {
+  const text = String(value);
+  if (![delimiter, '"', '\r', '\n'].some(token =&gt; text.includes(token))) return text;
+  return `"${text.replaceAll('"', '""')}"`;
+}</code></pre>
+
+    <p>The normalizer standardizes record separators and quoting style, and replaces empty or repeated header names with unique placeholders. It does not trim data cells, coerce dates, remove duplicates, pad short rows, or truncate long rows. Those changes can alter meaning. The accompanying error report lists each detected problem so a human or domain-aware policy can make the next decision.</p>
+
+    <h2>Test counterexamples, not just happy paths</h2>
+
+    <p>A parser test suite earns its keep with named counterexamples. The current suite covers a multiline quoted field with an escaped quote, semicolon detection, empty and duplicate headers, uneven row widths, duplicate rows, round-trip quoting, UTF-8 BOM removal, UTF-16 markers, and invalid UTF-8.</p>
+
+    <pre><code>const rows = parseCsv('id,note\n1,"line one\nline two: ""ok"""', ',');
+assert.deepEqual(rows, [
+  ['id', 'note'],
+  ['1', 'line one\nline two: "ok"']
+]);</code></pre>
+
+    <p>This test fails immediately with line splitting, naive comma splitting, or incorrect escaped-quote handling. By contrast, a test containing only <code>a,b\n1,2</code> can pass many broken parsers. Good fixtures distinguish implementations that preserve the contract from those that merely work on a demo.</p>
+
+    <h2>Keep files on the device by construction</h2>
+
+    <p>The browser application reads the selected file into memory, analyzes it locally, and creates downloads with <code>Blob</code> and object URLs. It has no upload endpoint, analytics script, external font, or runtime dependency. The data flow is inspectable: input bytes enter through the file picker or paste event and output leaves only through a user-triggered download.</p>
+
+    <p>This is “local-only,” not a broad security guarantee. The prototype has not completed a full content-security-policy audit, worker isolation, memory-pressure testing, or cross-browser accessibility review. Large files are processed in one allocation and can freeze a tab. A production version should move parsing to a Web Worker, add cancellation and size limits, and stream records where browser APIs permit.</p>
+
+    <h2>A practical preflight sequence</h2>
+
+    <ol>
+      <li>Read bytes and reject encodings outside the declared contract.</li>
+      <li>Rank delimiter candidates and show the selected value.</li>
+      <li>Parse with an explicit quoted-field state machine.</li>
+      <li>Stop on syntax errors such as an unclosed quote.</li>
+      <li>Report header, width, and duplicate-row issues with locations.</li>
+      <li>Serialize fields without semantic coercion.</li>
+      <li>Offer normalized CSV and a separate issue report.</li>
+    </ol>
+
+    <p>The result is intentionally modest. It does not make bad data good. It makes the parser's assumptions visible, catches errors that would otherwise shift columns silently, and preserves enough evidence for a human to choose the right repair.</p>
+
+    <p>The complete dependency-free implementation and tests are available in the <a href="https://github.com/softpeanut/csv-preflight">CSV Preflight repository</a>, and the <a href="./">live tool</a> runs entirely in the browser.</p>
+  </article>
+</main>
+</body>
+</html>

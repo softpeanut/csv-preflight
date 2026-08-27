@@ -55,19 +55,21 @@ export function analyze(text, delimiter = guessDelimiter(text)) {
     if (key && seenHeaders.has(key)) issues.push({ type: "duplicate_header", row: 1, detail: `Header “${key}” is duplicated` });
     seenHeaders.set(key, index);
   });
-  const seenRows = new Map(); const cleanData = [];
+  const seenRows = new Map();
   data.forEach((row, index) => {
     const number = index + 2;
     if (row.length !== headers.length) issues.push({ type: "column_count", row: number, detail: `Expected ${headers.length} columns, found ${row.length}` });
     const key = JSON.stringify(row);
     if (seenRows.has(key)) issues.push({ type: "duplicate_row", row: number, detail: `Duplicates row ${seenRows.get(key)}` });
-    else { seenRows.set(key, number); cleanData.push([...row]); }
+    else seenRows.set(key, number);
   });
   const cleanHeaders = headers.map((value, index) => value.trim() || `column_${index + 1}`).map((value, index, all) => {
     const prior = all.slice(0, index).filter(item => item === value).length;
     return prior ? `${value}_${prior + 1}` : value;
   });
-  const cleanRows = [cleanHeaders, ...cleanData.map(row => cleanHeaders.map((_, i) => row[i] ?? ""))];
+  // Preserve every data field exactly as parsed. Structural issues are evidence for the importer;
+  // silently deleting duplicates, padding short rows, or truncating long rows can change meaning.
+  const cleanRows = [cleanHeaders, ...data.map(row => [...row])];
   return { delimiter, rows: parsed.rows, cleanRows, issues };
 }
 
