@@ -22,6 +22,7 @@ const proTerms = readFileSync(new URL("./pro-terms.html", import.meta.url), "utf
 const proTermsKo = readFileSync(new URL("./pro-terms-ko.html", import.meta.url), "utf8");
 const batchTemplate = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-license.yml", import.meta.url), "utf8");
 const batchTemplateKo = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-license-ko.yml", import.meta.url), "utf8");
+const shopifyGuideKo = readFileSync(new URL("./shopify-csv-guide-ko.html", import.meta.url), "utf8");
 import { analyze, serializeCsv } from "./csv.mjs";
 
 test("presents a bounded service without pretending payment or booking is live", () => {
@@ -103,6 +104,18 @@ test("offers only the completed bounded offline batch product", () => {
   assert.doesNotMatch(batchTemplateKo, /type: textarea/);
 });
 
+test("publishes a bounded Korean Shopify CSV troubleshooting guide", () => {
+  assert.match(koreanPage, /shopify-csv-guide-ko\.html/);
+  assert.match(shopifyGuideKo, /UTF-8과 쉼표 구분/);
+  assert.match(shopifyGuideKo, /Title/);
+  assert.match(shopifyGuideKo, /URL handle/);
+  assert.match(shopifyGuideKo, /Option1 name/);
+  assert.match(shopifyGuideKo, /닫히지 않은 따옴표/);
+  assert.match(shopifyGuideKo, /가져오기 성공 보장이 아니라/);
+  assert.match(shopifyGuideKo, /help\.shopify\.com\/en\/manual\/products\/import-export\/common-import-issues/);
+  assert.doesNotMatch(shopifyGuideKo, /공식 도구|Shopify 인증|모든 오류/);
+});
+
 test("publishes truthful search metadata for every public page", () => {
   const structuredDataMatch = page.match(
     /<script type="application\/ld\+json">([^<]+)<\/script>/,
@@ -120,6 +133,7 @@ test("publishes truthful search metadata for every public page", () => {
     "https://softpeanut.github.io/csv-preflight/case-study.html",
     "https://softpeanut.github.io/csv-preflight/pro-terms.html",
     "https://softpeanut.github.io/csv-preflight/pro-terms-ko.html",
+    "https://softpeanut.github.io/csv-preflight/shopify-csv-guide-ko.html",
   ]) {
     assert.match(sitemap, new RegExp(`<loc>${location.replaceAll(".", "\\.")}</loc>`));
   }

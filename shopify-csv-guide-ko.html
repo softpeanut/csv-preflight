@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Shopify 상품 CSV 가져오기 오류 점검 — UTF-8·헤더·따옴표</title>
+  <meta name="description" content="Shopify 상품 CSV 가져오기 전 UTF-8, 쉼표, Title·URL handle 헤더, 옵션 열 의존성과 따옴표 오류를 확인하는 체크리스트입니다.">
+  <link rel="canonical" href="https://softpeanut.github.io/csv-preflight/shopify-csv-guide-ko.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Shopify 상품 CSV 가져오기 오류 점검">
+  <meta property="og:description" content="가져오기 전에 UTF-8, 쉼표, 필수 헤더, 옵션 열과 따옴표 오류를 확인하세요.">
+  <meta property="og:url" content="https://softpeanut.github.io/csv-preflight/shopify-csv-guide-ko.html">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <style>.guide{max-width:800px}.guide h1{font-size:clamp(42px,8vw,72px)}.guide h2{margin-top:42px}.guide p,.guide li{font-size:17px;line-height:1.75}.guide .warning{border-left:5px solid #c24d2c;background:#fff;padding:18px 20px;margin:25px 0}.guide code{background:#dde6dd;padding:2px 5px}.guide .actions{margin-top:35px;flex-wrap:wrap}</style>
+</head>
+<body>
+  <main class="guide">
+    <p><a href="ko.html">← CSV Preflight 한국어 서비스</a> · <a href="index.html">무료 검사기</a></p>
+    <header>
+      <span class="eyebrow">SHOPIFY PRODUCT CSV PREFLIGHT</span>
+      <h1>Shopify 상품 CSV,<br>가져오기 전에 볼 5가지</h1>
+      <p>CSV가 열리는 것과 Shopify가 안전하게 받아들이는 것은 다릅니다. 아래 순서는 Shopify 공식 상품 CSV 문서를 2026-08-27에 다시 확인해 정리한 사전 점검 목록입니다.</p>
+    </header>
+
+    <div class="warning"><strong>먼저 백업하세요.</strong> Shopify는 시작된 상품 CSV 가져오기를 취소할 수 없고 과거 가져오기 내역도 별도 화면에서 제공하지 않는다고 안내합니다. 덮어쓰기 전에 상품 데이터를 내보내 보관하세요.</div>
+
+    <h2>1. UTF-8과 쉼표 구분인지 확인</h2>
+    <p>Shopify 상품 CSV의 열은 쉼표로 구분해야 하며 가져오기 파일은 UTF-8이어야 합니다. 세미콜론이나 탭으로 저장된 파일, UTF-16 파일은 스프레드시트에서 열려도 가져오기 단계에서 실패할 수 있습니다. 공식 문서는 상품 CSV가 15MB를 넘으면 작은 파일로 나누라고 안내합니다.</p>
+
+    <h2>2. 새 상품과 업데이트의 필수 헤더를 구분</h2>
+    <p>새 상품은 <code>Title</code>이 필수이고, 변형 상품을 추가한다면 <code>URL handle</code>도 필요합니다. 기존 상품 업데이트에는 정확한 <code>Title</code>과 <code>URL handle</code> 열이 필요합니다. 헤더의 철자와 대소문자를 현재 공식 표와 대조하세요.</p>
+
+    <h2>3. 옵션 관련 열을 혼자 넣지 않기</h2>
+    <p><code>SKU</code>나 <code>Weight value (grams)</code>처럼 변형과 관련된 열을 업데이트한다면 대응하는 <code>Option1 name</code>과 <code>Option1 value</code>도 필요합니다. Shopify는 의존 열을 빼면 기본 변형이 새로 생기거나 기존 변형이 삭제될 수 있다고 경고합니다.</p>
+
+    <h2>4. 닫히지 않은 따옴표와 행 너비 확인</h2>
+    <p>쉼표나 줄바꿈을 포함한 필드는 큰따옴표로 감싸야 하고, 필드 안 큰따옴표는 두 번 써야 합니다. 닫히지 않은 따옴표, 헤더보다 열이 짧거나 긴 행, 중복 헤더는 가져오기 전에 먼저 보고 원본 의미를 확인하세요. 자동 도구가 부족한 값을 추정하거나 긴 행을 잘라내면 데이터 의미가 달라질 수 있습니다.</p>
+
+    <h2>5. 작은 표본으로 먼저 검증</h2>
+    <p>Shopify는 대규모 이전 작업을 수행하는 파트너에게 작은 변경 집합으로 먼저 시험하라고 안내합니다. 전체 덮어쓰기 전에 민감정보가 없는 소량 복사본으로 헤더, 변형, 이미지 URL과 결과를 확인하세요.</p>
+
+    <h2>무료 검사기가 확인하는 범위</h2>
+    <p>CSV Preflight의 Shopify 프로필은 쉼표, 현재 필수 헤더, 일부 문서화된 값과 열 의존성을 브라우저 안에서 검사합니다. 스토어에 접속하거나 이미지 URL을 가져오지 않으며 동적 Markets·메타필드 열, 구형 호환 헤더, 모든 업무 규칙을 판정하지 않습니다. 가져오기 성공 보장이 아니라 실수를 줄이는 사전 점검입니다.</p>
+    <div class="actions"><a href="index.html">CSV 1개 무료 점검</a><a href="https://github.com/softpeanut/csv-preflight/issues/new?template=batch-license-ko.yml">파일 20개 Pro 주문</a></div>
+
+    <h2>공식 자료</h2>
+    <ul>
+      <li><a href="https://help.shopify.com/en/manual/products/import-export/using-csv">Using CSV files to import and export products</a></li>
+      <li><a href="https://help.shopify.com/en/manual/products/import-export/import-products">Importing products with a CSV file</a></li>
+      <li><a href="https://help.shopify.com/en/manual/products/import-export/common-import-issues">Solutions to common product CSV import problems</a></li>
+    </ul>
+  </main>
+</body>
+</html>
