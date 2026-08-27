@@ -62,4 +62,6 @@ ongoing pipelines.
 
 The public issue is only a fit check. Visitors are explicitly told not to post data, credentials, or private links. Scope, delivery timing, a safe private transfer method, payment method, and refund/cancellation terms must be agreed before work or payment. Submitting an issue is not a booking. Lightning payment is available only after that agreement: the seller quotes an exact sats amount and confirms `softpeanut@stacker.news` in writing. The public page tells visitors not to pay before receiving the quote.
 
+Free-tool users may separately send a voluntary 2+ sat Lightning tip. The pages state that a tip buys no cleanup, support, feature, or import guarantee and is not applied to the fixed-scope service.
+
 No revenue should be claimed until a settled, withdrawable payment is verified.

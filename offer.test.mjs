@@ -65,6 +65,17 @@ test("Korean offer is bounded and uses the same safe intake", () => {
   assert.match(koreanTemplate, /작업 전에 범위, 납기, 결제 및 취소 조건/);
 });
 
+test("optional tips cannot be mistaken for service payment", () => {
+  assert.match(page, /lightning:softpeanut@stacker\.news/);
+  assert.match(page, /Tip 2\+ sats/);
+  assert.match(page, /buys no cleanup, support, feature, or import guarantee/);
+  assert.match(page, /separate from the fixed-scope service/);
+  assert.match(koreanPage, /lightning:softpeanut@stacker\.news/);
+  assert.match(koreanPage, /2 sats 이상 팁/);
+  assert.match(koreanPage, /정리 작업·지원·기능·가져오기 성공을 구매하지 않습니다/);
+  assert.match(koreanPage, /고정 범위 서비스와 별개입니다/);
+});
+
 test("publishes truthful search metadata for every public page", () => {
   const structuredDataMatch = page.match(
     /<script type="application\/ld\+json">([^<]+)<\/script>/,
