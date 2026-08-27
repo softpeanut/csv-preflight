@@ -12,6 +12,8 @@ const koreanTemplate = readFileSync(
   new URL("./.github/ISSUE_TEMPLATE/csv-cleanup-ko.yml", import.meta.url),
   "utf8",
 );
+const robots = readFileSync(new URL("./robots.txt", import.meta.url), "utf8");
+const sitemap = readFileSync(new URL("./sitemap.xml", import.meta.url), "utf8");
 
 test("presents a bounded service without pretending payment or booking is live", () => {
   assert.match(page, /\$29 structural cleanup/);
@@ -45,4 +47,23 @@ test("Korean offer is bounded and uses the same safe intake", () => {
   assert.match(koreanTemplate, /39,000원 구조 정리/);
   assert.match(koreanTemplate, /149,000원 가져오기 맞춤 정리/);
   assert.match(koreanTemplate, /작업 전에 범위, 납기, 결제 및 취소 조건/);
+});
+
+test("publishes truthful search metadata for every public page", () => {
+  const structuredDataMatch = page.match(
+    /<script type="application\/ld\+json">([^<]+)<\/script>/,
+  );
+  assert.ok(structuredDataMatch);
+  const structuredData = JSON.parse(structuredDataMatch[1]);
+  assert.equal(structuredData["@type"], "SoftwareApplication");
+  assert.equal(structuredData.isAccessibleForFree, true);
+  assert.equal(structuredData.offers.price, "0");
+  assert.match(robots, /Sitemap: https:\/\/softpeanut\.github\.io\/csv-preflight\/sitemap\.xml/);
+  for (const location of [
+    "https://softpeanut.github.io/csv-preflight/",
+    "https://softpeanut.github.io/csv-preflight/ko.html",
+    "https://softpeanut.github.io/csv-preflight/article.html",
+  ]) {
+    assert.match(sitemap, new RegExp(`<loc>${location.replaceAll(".", "\\.")}</loc>`));
+  }
 });
