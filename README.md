@@ -27,11 +27,37 @@ recorded machine-specific run, not a universal performance claim.
 - Short and long rows are reported but preserved without padding or truncation.
 - Output retains the detected delimiter and adds a UTF-8 BOM for spreadsheet compatibility.
 
-The report preserves every detected issue. This is structural preflight, not schema, business-rule, or security validation.
+The report preserves every detected issue. Generic mode is structural preflight, not schema,
+business-rule, or security validation.
+
+## Shopify product CSV preset
+
+The optional Shopify preset adds a bounded set of checks from Shopify's official product CSV
+guide, reviewed on 2026-08-27:
+
+- comma-separated columns and case-sensitive required headers;
+- `Title` for new product imports, plus `URL handle` for product updates and new variants;
+- `Option1 name` and `Option1 value` when an update includes `SKU` or `Weight value (grams)`;
+- documented handle, status, boolean, inventory-policy, weight-unit, numeric price/weight, HTTPS
+  image URL, and text-length constraints.
+
+Official sources:
+
+- <https://help.shopify.com/en/manual/products/import-export/using-csv>
+- <https://help.shopify.com/en/manual/products/import-export/import-products/>
+
+The preset does not fetch image URLs, inspect a store, validate dynamic Markets/metafield columns,
+cover every column dependency, or guarantee that Shopify accepts a file. Shopify supports older
+headers and dynamic columns, so the tool avoids pretending it can reject every unknown header.
 
 ## Fixed-scope cleanup pilot
 
-The checker remains free. A **$29 structural cleanup** covers one CSV up to 1 MB, a normalized CSV, and a machine-readable issue report; it excludes schema mapping and revisions. A separate **$99 importer-fit cleanup** covers one CSV up to 10 MB, one target schema, a cleaned CSV, a machine-readable issue report, and one revision. Both tiers exclude OCR, database access, sensitive or regulated data, legal or business-rule validation, and ongoing pipelines.
+The checker remains free. A **$29 structural cleanup** covers one CSV up to 1 MB, a normalized CSV,
+and a machine-readable issue report; it excludes schema mapping and revisions. A separate **$99
+importer-fit cleanup** covers one CSV up to 10 MB, one target schema—including one bounded Shopify
+product-import target—a cleaned CSV, a machine-readable issue report, and one revision. Both tiers
+exclude OCR, database access, sensitive or regulated data, legal or business-rule validation, and
+ongoing pipelines.
 
 The public issue is only a fit check. Visitors are explicitly told not to post data, credentials, or private links. Scope, delivery timing, a safe private transfer method, payment method, and refund/cancellation terms must be agreed before work or payment. Submitting an issue is not a booking.
 
