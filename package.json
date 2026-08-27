@@ -1,1 +1,1 @@
-{"type":"module","scripts":{"test":"node --test"},"private":true}
+{"type":"module","scripts":{"test":"node --test","benchmark":"node benchmark.mjs","benchmark:record":"node benchmark.mjs --write"},"engines":{"node":"22.x"},"private":true}

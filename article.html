@@ -117,6 +117,14 @@ assert.deepEqual(rows, [
 
     <p>This test fails immediately with line splitting, naive comma splitting, or incorrect escaped-quote handling. By contrast, a test containing only <code>a,b\n1,2</code> can pass many broken parsers. Good fixtures distinguish implementations that preserve the contract from those that merely work on a demo.</p>
 
+    <h2>Publish the uncomfortable benchmark</h2>
+
+    <p>Correctness does not make this small parser automatically fast. A recorded local run parsed a deterministic 2,667,802-byte file containing 100,001 simple rows. On Node.js 22.23.2 and an Apple M3 Pro, eleven measured runs after three warmups produced a median of 24.49 ms for the state machine and 15.86 ms for naive line-and-comma splitting. On that deliberately easy input, the correct parser was 1.54 times slower.</p>
+
+    <p>The faster implementation is still not interchangeable. Both outputs match on the simple benchmark file, but the same naive splitter fails the checked fixture containing a quoted comma and quoted newline. The useful conclusion is bounded: on this machine and input, correctness costs measurable CPU time, while naive speed buys a parser that changes valid records. It is not a universal browser-performance claim.</p>
+
+    <p>The <a href="benchmark.mjs">benchmark rig</a> generates the input, asserts both implementations agree before timing, runs the named counterexample, and records the median rather than the fastest result. The checked-in <a href="benchmark-results.json">result file</a> includes the runtime, CPU, byte count, run count, and exact measurements. Reproduce it with <code>npm run benchmark</code>; use <code>npm run benchmark:record</code> only when intentionally replacing the recorded evidence.</p>
+
     <h2>Keep files on the device by construction</h2>
 
     <p>The browser application reads the selected file into memory, analyzes it locally, and creates downloads with <code>Blob</code> and object URLs. It has no upload endpoint, analytics script, external font, or runtime dependency. The data flow is inspectable: input bytes enter through the file picker or paste event and output leaves only through a user-triggered download.</p>

@@ -9,9 +9,15 @@ All processing and downloads happen locally. There is no server, API, CDN, stora
 ```sh
 python3 -m http.server 8080
 npm test
+npm run benchmark
 ```
 
 Open `http://localhost:8080/experiments/csv-preflight/` when serving from the repository root, or `http://localhost:8080/` when serving this directory. Automated tests cover CSV quoting, delimiter detection, issue detection, normalization, serialization, and encoding signatures. File drag/drop and browser download behavior still require a browser smoke test.
+
+`npm run benchmark` regenerates a deterministic 100,001-row simple CSV in memory, verifies the
+state-machine parser and a naive splitter agree on that input, proves the naive splitter fails a
+quoted counterexample, and reports median timing over eleven runs. `benchmark-results.json` is one
+recorded machine-specific run, not a universal performance claim.
 
 ## Normalization contract
 
