@@ -23,3 +23,18 @@ test("accepts a narrow valid Shopify update surface",()=>{
   const rows=parseCsv("Title,URL handle,Option1 name,Option1 value,SKU,Status,Price,Weight value (grams),Weight unit for display,Product image URL\nShirt,shirt-1,Size,M,ABC,draft,19.00,150,g,https://example.com/a.jpg").rows;
   assert.deepEqual(analyzeShopifyProduct(rows,",","update"),[]);
 });
+test("checks documented Shopify numeric, inventory, fulfillment, and collection rules",()=>{
+  const rows=[
+    ["Title","URL handle","Option1 name","Option1 value","SKU","Compare-at price","Cost per item","Inventory quantity","Inventory tracker","Image position","Gift card","Fulfillment service","Tags","Collection"],
+    ["Shirt","shirt-1","Size","M","","$20","seven","1.5","other","0","yes","My Service",Array(251).fill("tag").join(","),"x".repeat(256)],
+  ];
+  const issues=analyzeShopifyProduct(rows,",","update");
+  assert.equal(issues.filter(issue=>issue.type==="shopify_value").length,9);
+  assert.deepEqual(issues.filter(issue=>issue.type==="shopify_dependency").map(issue=>issue.row),[2]);
+});
+test("flags only product images beyond Shopify's per-product limit",()=>{
+  const rows=[["Title","URL handle","Product image URL"]];
+  for(let i=0;i<251;i++) rows.push([i===0?"Shirt":"","shirt-1",`https://example.com/${i}.jpg`]);
+  const issues=analyzeShopifyProduct(rows,",","create");
+  assert.deepEqual(issues.filter(issue=>issue.type==="shopify_limit").map(issue=>issue.row),[252]);
+});

@@ -38,8 +38,9 @@ guide, reviewed on 2026-08-27:
 - comma-separated columns and case-sensitive required headers;
 - `Title` for new product imports, plus `URL handle` for product updates and new variants;
 - `Option1 name` and `Option1 value` when an update includes `SKU` or `Weight value (grams)`;
-- documented handle, status, boolean, inventory-policy, weight-unit, numeric price/weight, HTTPS
-  image URL, and text-length constraints.
+- documented handle, status, boolean, inventory-policy/tracker, fulfillment-service, weight-unit,
+  numeric price/cost/inventory/image-position, HTTPS image URL, tag/collection/text-length, custom
+  fulfillment SKU dependency, and 250-images-per-product constraints.
 
 Official sources:
 
