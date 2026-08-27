@@ -14,6 +14,11 @@ const koreanTemplate = readFileSync(
 );
 const robots = readFileSync(new URL("./robots.txt", import.meta.url), "utf8");
 const sitemap = readFileSync(new URL("./sitemap.xml", import.meta.url), "utf8");
+const caseStudy = readFileSync(new URL("./case-study.html", import.meta.url), "utf8");
+const caseInput = readFileSync(new URL("./examples/messy-contacts.csv", import.meta.url), "utf8");
+const caseOutput = readFileSync(new URL("./examples/normalized-contacts.csv", import.meta.url), "utf8");
+const caseReport = readFileSync(new URL("./examples/preflight-errors.csv", import.meta.url), "utf8");
+import { analyze, serializeCsv } from "./csv.mjs";
 
 test("presents a bounded service without pretending payment or booking is live", () => {
   assert.match(page, /\$29 structural cleanup/);
@@ -63,7 +68,22 @@ test("publishes truthful search metadata for every public page", () => {
     "https://softpeanut.github.io/csv-preflight/",
     "https://softpeanut.github.io/csv-preflight/ko.html",
     "https://softpeanut.github.io/csv-preflight/article.html",
+    "https://softpeanut.github.io/csv-preflight/case-study.html",
   ]) {
     assert.match(sitemap, new RegExp(`<loc>${location.replaceAll(".", "\\.")}</loc>`));
   }
+});
+
+test("case study downloads are exact outputs of the public analyzer", () => {
+  const analysis = analyze(caseInput);
+  assert.equal(analysis.delimiter, ";");
+  assert.equal(serializeCsv(analysis.cleanRows, analysis.delimiter).replaceAll("\r\n", "\n"), caseOutput);
+  const report = serializeCsv([
+    ["type", "row", "detail"],
+    ...analysis.issues.map((issue) => [issue.type, issue.row ?? "", issue.detail]),
+  ]).replaceAll("\r\n", "\n");
+  assert.equal(report, caseReport);
+  assert.match(caseStudy, /No row is silently deleted/);
+  assert.match(caseStudy, /agreed before work starts/);
+  assert.doesNotMatch(caseStudy, /customer|client result|guaranteed/i);
 });
