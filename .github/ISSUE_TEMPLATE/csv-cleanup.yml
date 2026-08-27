@@ -1,0 +1,47 @@
+name: CSV cleanup fit check
+description: Check whether one non-sensitive CSV fits the fixed $99 pilot.
+title: "CSV cleanup fit check: "
+labels:
+  - service-inquiry
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is a public fit check, not a booking or payment request. Do not upload your CSV, credentials, private links, or personal, financial, health, or other regulated data.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Import problem
+      description: Describe the structural problem without pasting real data.
+      placeholder: The destination rejects rows with extra columns and repeated headers.
+    validations:
+      required: true
+  - type: textarea
+    id: target
+    attributes:
+      label: Target schema or importer
+      description: List the expected columns and any public importer documentation.
+    validations:
+      required: true
+  - type: dropdown
+    id: size
+    attributes:
+      label: Approximate file size
+      options:
+        - Under 1 MB
+        - 1–5 MB
+        - 5–10 MB
+        - Over 10 MB (outside pilot)
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Safety and scope
+      options:
+        - label: I will not post data, credentials, or private links in this issue.
+          required: true
+        - label: The source contains no sensitive or regulated data.
+          required: true
+        - label: I understand that scope, delivery, payment, and cancellation terms must be agreed before work starts.
+          required: true

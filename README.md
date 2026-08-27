@@ -17,14 +17,16 @@ Open `http://localhost:8080/experiments/csv-preflight/` when serving from the re
 
 - Whitespace-only headers become `column_N`.
 - Repeated headers gain `_2`, `_3`, and so on.
-- Exact duplicate data rows are removed after the first occurrence.
-- Short rows are padded; extra cells are discarded to match the header width.
+- Exact duplicate data rows are reported but preserved.
+- Short and long rows are reported but preserved without padding or truncation.
 - Output retains the detected delimiter and adds a UTF-8 BOM for spreadsheet compatibility.
 
-The report preserves every detected issue, including duplicate rows removed from cleaned output. This is structural preflight, not schema, business-rule, or security validation.
+The report preserves every detected issue. This is structural preflight, not schema, business-rule, or security validation.
 
-## Revenue hypothesis
+## Fixed-scope cleanup pilot
 
-The actual checker is free. A **planned $12 Pro idea** would add saved mapping recipes and batch checks. It is not for sale: the page has no checkout and collects no money. The only CTA opens a prefilled GitHub issue so a visitor can voluntarily register interest. Replace the placeholder repository URL with an owner-controlled repository before deployment.
+The checker remains free. A separate **$99 cleanup pilot** covers one CSV up to 10 MB, one target schema, a cleaned CSV, a machine-readable issue report, and one revision. It excludes OCR, database access, sensitive or regulated data, legal or business-rule validation, and ongoing pipelines.
 
-No revenue should be claimed until a settled, withdrawable payment is verified. External publishing, account creation, payment setup, and outreach are outside this experiment.
+The public issue is only a fit check. Visitors are explicitly told not to post data, credentials, or private links. Scope, delivery timing, a safe private transfer method, payment method, and refund/cancellation terms must be agreed before work or payment. Submitting an issue is not a booking.
+
+No revenue should be claimed until a settled, withdrawable payment is verified.
