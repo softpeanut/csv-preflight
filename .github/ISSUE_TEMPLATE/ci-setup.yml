@@ -1,0 +1,51 @@
+name: CSV CI setup fit check
+description: Check whether one public or sanitized repository fits the fixed $99 workflow setup.
+title: "CSV CI setup fit check: "
+labels:
+  - service-inquiry
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is a public fit check, not a booking or payment request. Do not post CSV data, credentials, private repository links, customer information, or secrets. The pilot covers one public repository or sanitized minimal reproduction only.
+  - type: input
+    id: repository
+    attributes:
+      label: Public repository or sanitized example URL
+      description: Use only a public GitHub URL containing no sensitive or regulated data.
+      placeholder: https://github.com/example/public-repository
+    validations:
+      required: true
+  - type: dropdown
+    id: delivery
+    attributes:
+      label: Delivery format
+      options:
+        - Pull request to one public repository
+        - Workflow patch against one sanitized minimal reproduction
+    validations:
+      required: true
+  - type: dropdown
+    id: file_count
+    attributes:
+      label: CSV scope
+      options:
+        - One generic UTF-8 CSV path up to 10 MiB
+        - More than one file or an importer-specific schema (outside this pilot)
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Safety, environment, and terms
+      options:
+        - label: The example and target CSV contain no sensitive or regulated data.
+          required: true
+        - label: The repository uses a GitHub-hosted Ubuntu runner and needs no secrets, private dependencies, or self-hosted infrastructure.
+          required: true
+        - label: I will not post data, credentials, private links, customer information, or payment proof in this issue.
+          required: true
+        - label: I understand the fixed price is $99, quoted as an exact Lightning amount only after written scope agreement.
+          required: true
+        - label: I understand that opening this issue is not a booking and work starts only after scope, delivery, payment, and cancellation terms are agreed.
+          required: true
