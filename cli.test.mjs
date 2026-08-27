@@ -1,8 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { parseArgs, runCli } from "./cli.mjs";
 
 const bytes = text => new TextEncoder().encode(text);
+
+test("downloaded CLI has no relative module dependency", () => {
+  const source = readFileSync(new URL("./cli.mjs", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /from ["']\.\//);
+});
 
 test("free CLI accepts one input and keeps all paths distinct", () => {
   const config = parseArgs(["input.csv"]);
