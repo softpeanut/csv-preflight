@@ -79,3 +79,80 @@ export function serializeCsv(rows, delimiter = ",") {
     return /["\r\n]/.test(text) || text.includes(delimiter) ? `"${text.replaceAll('"', '""')}"` : text;
   }).join(delimiter)).join("\r\n") + "\r\n";
 }
+
+export function analyzeShopifyProduct(rows, delimiter, mode) {
+  if (!['create', 'update'].includes(mode) || !rows.length) return [];
+  const issues = [];
+  const [headers, ...data] = rows;
+  const exactIndex = name => headers.indexOf(name);
+  const looseIndex = name => headers.findIndex(header => header.trim().toLowerCase() === name.toLowerCase());
+  const requireHeader = (name, detail) => {
+    if (exactIndex(name) >= 0) return true;
+    const wrongCase = looseIndex(name);
+    if (wrongCase >= 0) {
+      issues.push({ type: 'shopify_header_case', row: 1, detail: `Use exact header “${name}”; found “${headers[wrongCase]}”` });
+    } else {
+      issues.push({ type: 'shopify_missing_header', row: 1, detail });
+    }
+    return false;
+  };
+  const valueAt = (row, name) => {
+    const index = exactIndex(name);
+    return index < 0 ? '' : String(row[index] ?? '').trim();
+  };
+  const validateValues = (name, predicate, detail) => {
+    if (exactIndex(name) < 0) return;
+    data.forEach((row, index) => {
+      const value = valueAt(row, name);
+      if (value && !predicate(value)) issues.push({ type: 'shopify_value', row: index + 2, detail: `${name}: ${detail}; found “${value}”` });
+    });
+  };
+
+  if (delimiter !== ',') {
+    issues.push({ type: 'shopify_delimiter', row: null, detail: 'Shopify product CSV columns must be separated by commas' });
+  }
+  const hasTitle = requireHeader('Title', `${mode === 'create' ? 'New product imports' : 'Product updates'} require the exact “Title” column`);
+  const hasHandle = mode === 'update'
+    ? requireHeader('URL handle', 'Product updates require the exact “URL handle” column')
+    : exactIndex('URL handle') >= 0;
+
+  const optionIndexes = ['Option1 name', 'Option1 value'].map(looseIndex);
+  const hasVariantValues = optionIndexes.some(index => index >= 0 && data.some(row => String(row[index] ?? '').trim()));
+  if (mode === 'create' && hasVariantValues && !hasHandle) {
+    requireHeader('URL handle', 'New products with variants require the exact “URL handle” column');
+  }
+  if (mode === 'update' && ['SKU', 'Weight value (grams)'].some(name => exactIndex(name) >= 0)) {
+    requireHeader('Option1 name', 'Variant-related updates require the exact “Option1 name” column');
+    requireHeader('Option1 value', 'Variant-related updates require the exact “Option1 value” column');
+  }
+
+  if (mode === 'create' && hasTitle && !data.some(row => valueAt(row, 'Title'))) {
+    issues.push({ type: 'shopify_required_value', row: null, detail: 'At least one new product row needs a Title value' });
+  }
+  if (mode === 'update' && hasHandle) {
+    data.forEach((row, index) => {
+      if (!valueAt(row, 'URL handle')) issues.push({ type: 'shopify_required_value', row: index + 2, detail: 'Product update rows need a URL handle value' });
+    });
+  }
+
+  validateValues('URL handle', value => /^[A-Za-z0-9-]+$/.test(value), 'use only letters, numbers, and dashes with no spaces');
+  validateValues('Status', value => ['active', 'draft', 'archived'].includes(value), 'use active, draft, or archived');
+  validateValues('Published on online store', value => ['true', 'false'].includes(value), 'use true or false');
+  validateValues('Charge tax', value => ['true', 'false'].includes(value), 'use true or false');
+  validateValues('Requires shipping', value => ['true', 'false'].includes(value), 'use true or false');
+  validateValues('Continue selling when out of stock', value => ['deny', 'continue'].includes(value), 'use deny or continue');
+  validateValues('Weight unit for display', value => ['g', 'kg', 'lb', 'oz'].includes(value), 'use g, kg, lb, or oz');
+  validateValues('Weight value (grams)', value => /^\d+$/.test(value), 'use a whole number without a unit');
+  validateValues('Price', value => /^\d+(?:\.\d+)?$/.test(value), 'use a number without a currency symbol');
+  validateValues('Product image URL', value => {
+    try { return new URL(value).protocol === 'https:'; } catch { return false; }
+  }, 'use a public HTTPS image URL');
+  validateValues('Variant image URL', value => {
+    try { return new URL(value).protocol === 'https:'; } catch { return false; }
+  }, 'use a public HTTPS image URL');
+  validateValues('Image alt text', value => value.length <= 512, 'use no more than 512 characters');
+  validateValues('SEO title', value => value.length <= 70, 'use no more than 70 characters');
+  validateValues('SEO description', value => value.length <= 320, 'use no more than 320 characters');
+
+  return issues;
+}

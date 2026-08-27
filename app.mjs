@@ -1,7 +1,10 @@
-import { analyze, detectEncoding, serializeCsv } from "./csv.mjs";
+import { analyze, analyzeShopifyProduct, detectEncoding, serializeCsv } from "./csv.mjs";
 const $ = id => document.getElementById(id); let latest; let encodingLabel = "Pasted text (browser Unicode)";
 function run() {
-  latest = analyze($("input").value); $("results").hidden = false;
+  latest = analyze($("input").value);
+  const [profile, mode] = $("profile").value.split(":");
+  if (profile === "shopify") latest.issues.push(...analyzeShopifyProduct(latest.rows, latest.delimiter, mode));
+  $("results").hidden = false;
   $("encoding").textContent = encodingLabel; $("delimiter").textContent = latest.delimiter === "\t" ? "Tab" : latest.delimiter;
   $("rows").textContent = Math.max(0, latest.rows.length - 1); $("count").textContent = latest.issues.length;
   $("issues").replaceChildren(...(latest.issues.length ? latest.issues : [{type:"pass", detail:"No structural issues found"}]).map(issue => {
