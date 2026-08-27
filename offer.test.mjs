@@ -25,6 +25,8 @@ const batchTemplateKo = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-lic
 const action = readFileSync(new URL("./action.yml", import.meta.url), "utf8");
 const shopifyGuideKo = readFileSync(new URL("./shopify-csv-guide-ko.html", import.meta.url), "utf8");
 const githubActionGuide = readFileSync(new URL("./validate-csv-github-actions.html", import.meta.url), "utf8");
+const ciSetupTerms = readFileSync(new URL("./ci-setup-terms.html", import.meta.url), "utf8");
+const ciSetupTemplate = readFileSync(new URL("./.github/ISSUE_TEMPLATE/ci-setup.yml", import.meta.url), "utf8");
 import { analyze, serializeCsv } from "./csv.mjs";
 
 test("presents a bounded service without pretending payment or booking is live", () => {
@@ -143,6 +145,26 @@ test("publishes the tested free Action without blurring the Pro boundary", () =>
   assert.doesNotMatch(page, /Marketplace|official GitHub Action/i);
 });
 
+test("offers a bounded $99 one-repository CI setup without collecting secrets", () => {
+  assert.match(page, /FIXED-SCOPE CSV CI SETUP · \$99/);
+  assert.match(page, /one generic UTF-8 CSV path/);
+  assert.match(page, /No private access, secrets, schema rules, import execution, or ongoing maintenance/);
+  assert.match(page, /template=ci-setup\.yml/);
+  assert.match(page, /ci-setup-terms\.html/);
+  assert.match(ciSetupTerms, /fixed price is USD 99/);
+  assert.match(ciSetupTerms, /one public repository or sanitized minimal reproduction/);
+  assert.match(ciSetupTerms, /within three business days/);
+  assert.match(ciSetupTerms, /single-use BOLT11 Lightning invoice/);
+  assert.match(ciSetupTerms, /cancel before work begins/);
+  assert.match(ciSetupTerms, /One in-scope revision requested within seven calendar days/);
+  assert.match(ciSetupTerms, /requests no private repository access, credentials, or real CSV content/);
+  assert.match(ciSetupTemplate, /not a booking or payment request/i);
+  assert.match(ciSetupTemplate, /fixed price is \$99/);
+  assert.match(ciSetupTemplate, /will not post data, credentials, private links/);
+  assert.doesNotMatch(ciSetupTemplate, /type: textarea/);
+  assert.doesNotMatch(page, /Buy now|Book now|instant setup/i);
+});
+
 test("publishes a bounded Korean Shopify CSV troubleshooting guide", () => {
   assert.match(koreanPage, /shopify-csv-guide-ko\.html/);
   assert.match(shopifyGuideKo, /UTF-8과 쉼표 구분/);
@@ -174,6 +196,7 @@ test("publishes truthful search metadata for every public page", () => {
     "https://softpeanut.github.io/csv-preflight/pro-terms-ko.html",
     "https://softpeanut.github.io/csv-preflight/shopify-csv-guide-ko.html",
     "https://softpeanut.github.io/csv-preflight/validate-csv-github-actions.html",
+    "https://softpeanut.github.io/csv-preflight/ci-setup-terms.html",
   ]) {
     assert.match(sitemap, new RegExp(`<loc>${location.replaceAll(".", "\\.")}</loc>`));
   }
