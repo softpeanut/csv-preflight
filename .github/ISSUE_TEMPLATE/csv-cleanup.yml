@@ -1,5 +1,5 @@
 name: CSV cleanup fit check
-description: Check whether one non-sensitive CSV fits the fixed $99 pilot.
+description: Check whether one non-sensitive CSV fits the $29 or $99 fixed scope.
 title: "CSV cleanup fit check: "
 labels:
   - service-inquiry
@@ -16,13 +16,21 @@ body:
       placeholder: The destination rejects rows with extra columns and repeated headers.
     validations:
       required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Requested scope
+      options:
+        - $29 structural cleanup — up to 1 MB, no schema mapping or revision
+        - $99 importer-fit cleanup — up to 10 MB, one target schema and one revision
+        - Not sure yet
+    validations:
+      required: true
   - type: textarea
     id: target
     attributes:
       label: Target schema or importer
-      description: List the expected columns and any public importer documentation.
-    validations:
-      required: true
+      description: Required for the $99 tier only. List the expected columns and any public importer documentation.
   - type: dropdown
     id: size
     attributes:

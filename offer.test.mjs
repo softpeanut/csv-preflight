@@ -14,7 +14,9 @@ const koreanTemplate = readFileSync(
 );
 
 test("presents a bounded service without pretending payment or booking is live", () => {
-  assert.match(page, /\$99 pilot/);
+  assert.match(page, /\$29 structural cleanup/);
+  assert.match(page, /\$99 importer-fit cleanup/);
+  assert.match(page, /No schema mapping or revision/);
   assert.match(page, /one file up to 10 MB/);
   assert.match(page, /before any work or payment/);
   assert.match(page, /issues\/new\?template=csv-cleanup\.yml/);
@@ -26,9 +28,12 @@ test("public intake blocks sensitive data and requires pre-work agreement", () =
   assert.match(template, /Do not upload your CSV, credentials, private links/i);
   assert.match(template, /contains no sensitive or regulated data/);
   assert.match(template, /before work starts/);
+  assert.match(template, /\$29 structural cleanup/);
+  assert.match(template, /\$99 importer-fit cleanup/);
 });
 
 test("Korean offer is bounded and uses the same safe intake", () => {
+  assert.match(koreanPage, /39,000원/);
   assert.match(koreanPage, /149,000원/);
   assert.match(koreanPage, /CSV 파일 1개/);
   assert.match(koreanPage, /최대 10MB/);
@@ -37,5 +42,7 @@ test("Korean offer is bounded and uses the same safe intake", () => {
   assert.doesNotMatch(koreanPage, /바로 결제|즉시 예약|구매 완료/);
   assert.match(koreanTemplate, /이 문의는 예약이나 결제가 아닙니다/);
   assert.match(koreanTemplate, /민감정보나 규제 대상 데이터가 없습니다/);
+  assert.match(koreanTemplate, /39,000원 구조 정리/);
+  assert.match(koreanTemplate, /149,000원 가져오기 맞춤 정리/);
   assert.match(koreanTemplate, /작업 전에 범위, 납기, 결제 및 취소 조건/);
 });

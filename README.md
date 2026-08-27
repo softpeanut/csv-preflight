@@ -31,7 +31,7 @@ The report preserves every detected issue. This is structural preflight, not sch
 
 ## Fixed-scope cleanup pilot
 
-The checker remains free. A separate **$99 cleanup pilot** covers one CSV up to 10 MB, one target schema, a cleaned CSV, a machine-readable issue report, and one revision. It excludes OCR, database access, sensitive or regulated data, legal or business-rule validation, and ongoing pipelines.
+The checker remains free. A **$29 structural cleanup** covers one CSV up to 1 MB, a normalized CSV, and a machine-readable issue report; it excludes schema mapping and revisions. A separate **$99 importer-fit cleanup** covers one CSV up to 10 MB, one target schema, a cleaned CSV, a machine-readable issue report, and one revision. Both tiers exclude OCR, database access, sensitive or regulated data, legal or business-rule validation, and ongoing pipelines.
 
 The public issue is only a fit check. Visitors are explicitly told not to post data, credentials, or private links. Scope, delivery timing, a safe private transfer method, payment method, and refund/cancellation terms must be agreed before work or payment. Submitting an issue is not a booking.
 
