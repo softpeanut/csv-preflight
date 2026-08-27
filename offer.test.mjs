@@ -31,6 +31,9 @@ test("presents a bounded service without pretending payment or booking is live",
   assert.match(page, /shopify:update/);
   assert.match(page, /help\.shopify\.com\/en\/manual\/products\/import-export\/using-csv/);
   assert.match(page, /before any work or payment/);
+  assert.match(page, /Payment available by Lightning/);
+  assert.match(page, /softpeanut@stacker\.news/);
+  assert.match(page, /Do not pay before receiving that written quote/);
   assert.match(page, /issues\/new\?template=csv-cleanup\.yml/);
   assert.doesNotMatch(page, /checkout|buy now|book now/i);
 });
@@ -51,6 +54,8 @@ test("Korean offer is bounded and uses the same safe intake", () => {
   assert.match(koreanPage, /최대 10MB/);
   assert.match(koreanPage, /Shopify 상품 CSV 가져오기 포함 가능/);
   assert.match(koreanPage, /데이터, 개인정보, 인증정보 또는 비공개 링크를 올리지 마세요/);
+  assert.match(koreanPage, /합의 후 Lightning 결제가 가능합니다/);
+  assert.match(koreanPage, /안내 전에는 송금하지 마세요/);
   assert.match(koreanPage, /issues\/new\?template=csv-cleanup-ko\.yml/);
   assert.doesNotMatch(koreanPage, /바로 결제|즉시 예약|구매 완료/);
   assert.match(koreanTemplate, /이 문의는 예약이나 결제가 아닙니다/);
