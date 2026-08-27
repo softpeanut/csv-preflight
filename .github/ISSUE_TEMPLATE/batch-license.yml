@@ -1,5 +1,5 @@
 name: CSV Preflight Pro order request
-description: Request the 15,000 sat offline batch license without posting data.
+description: Request a Personal or Team offline batch license without posting data.
 title: "CSV Preflight Pro order request"
 labels:
   - product-order
@@ -9,9 +9,18 @@ body:
       value: |
         This public request is not payment. Do not post CSV content, filenames, contact details, payment proof, credentials, or private links.
 
-        After availability is confirmed, the seller posts an issue-bound, single-use 15,000 sat BOLT11 invoice with a 30-minute payment window. Pay only after accepting the written terms. The invoice status endpoint lets the seller verify settlement without public payment proof. After verified payment, the licensed ZIP is delivered within one business day through a buyer-only private GitHub repository.
+        After availability is confirmed, the seller posts an issue-bound, single-use BOLT11 invoice matching the selected tier, with a 30-minute payment window. Pay only after accepting the written terms. The invoice status endpoint lets the seller verify settlement without public payment proof. After verified payment, the licensed ZIP is delivered within one business day through a buyer-only private GitHub repository.
 
         Terms: https://softpeanut.github.io/csv-preflight/pro-terms.html
+  - type: dropdown
+    id: license-tier
+    attributes:
+      label: License tier
+      options:
+        - Personal — 15,000 sats — one user
+        - Team — 100,000 sats — up to 10 named users in one legal organization
+    validations:
+      required: true
   - type: dropdown
     id: batch-size
     attributes:
@@ -37,7 +46,7 @@ body:
     attributes:
       label: Order boundaries
       options:
-        - label: I will not pay before the seller posts the issue-bound 15,000 sat invoice in this issue.
+        - label: I will not pay before the seller posts an issue-bound invoice matching my selected tier in this issue.
           required: true
         - label: I agree to receive the archive through a buyer-only private GitHub repository.
           required: true
