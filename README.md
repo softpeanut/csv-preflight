@@ -28,6 +28,24 @@ invocation/runtime error. It accepts UTF-8 input up to 10 MiB and refuses to ove
 an existing output. It does not include the Pro archive's batch, Shopify-profile, ZIP, or JSON
 automation features.
 
+### Free GitHub Action
+
+The same one-file check can fail a workflow when it finds structural issues. The Action passes
+input paths through the environment rather than interpolating them into shell source, writes its
+default artifacts under the runner's temporary directory, and keeps the CLI's exit-code contract:
+
+```yaml
+- uses: softpeanut/csv-preflight@v0.5.0
+  with:
+    path: data/import.csv
+    normalized_path: ${{ runner.temp }}/import.normalized.csv
+    report_path: ${{ runner.temp }}/import.issues.csv
+```
+
+Pin the Action to a full commit SHA when your workflow requires immutable third-party code. The
+free Action checks one generic UTF-8 CSV up to 10 MiB; it does not upload the file or include the
+Pro edition's batch, import-profile, ZIP, or JSON features.
+
 `npm run benchmark` regenerates a deterministic 100,001-row simple CSV in memory, verifies the
 state-machine parser and a naive splitter agree on that input, proves the naive splitter fails a
 quoted counterexample, and reports median timing over eleven runs. `benchmark-results.json` is one
