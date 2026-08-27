@@ -53,12 +53,13 @@ headers and dynamic columns, so the tool avoids pretending it can reject every u
 
 ## Fixed-scope cleanup pilot
 
-The completed **CSV Preflight Pro offline batch edition** is offered as a 15,000 sat one-time
-personal/internal-business license. It processes 1–20 local UTF-8 CSV files per run, creates
+The completed **CSV Preflight Pro offline batch edition** is offered as a 15,000 sat Personal
+license for one user or a 100,000 sat Team license for up to 10 named users in one legal
+organization. Both tiers receive the same completed archive; only the license scope differs. It processes 1–20 local UTF-8 CSV files per run, creates
 comma-separated normalized files, per-file issue reports, and one manifest, and includes the
 generic and bounded Shopify profiles. The licensed seller-held archive is complete and is not part
 of this public free-tool repository. Buyers request an order without posting data, receive an
-issue-bound single-use 15,000 sat BOLT11 invoice with a written 30-minute payment window, and
+issue-bound single-use BOLT11 invoice matching the selected tier with a written 30-minute payment window, and
 receive the archive through a buyer-only private GitHub repository after verified payment. The
 seller verifies settlement through the invoice status endpoint; no public payment proof is needed.
 Product terms and the separate service scope remain distinct.
