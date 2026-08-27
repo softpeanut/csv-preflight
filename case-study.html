@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>A checkable CSV cleanup example — CSV Preflight</title>
+  <meta name="description" content="Download a synthetic messy CSV, its normalized output, and the exact structural issue report produced by CSV Preflight.">
+  <link rel="canonical" href="https://softpeanut.github.io/csv-preflight/case-study.html">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <style>.example{max-width:760px}.example h2{margin-top:2.4rem}.files{display:grid;gap:12px}.files a{display:block;padding:16px;border:1px solid #ccd5cc;border-radius:10px;background:#fff}.boundary{padding:18px;border-left:4px solid #c24d2c;background:#fff}</style>
+</head>
+<body>
+  <main class="example">
+    <p><a href="./">CSV Preflight</a> · <a href="ko.html" lang="ko">한국어 서비스</a></p>
+    <header>
+      <span class="eyebrow">CHECKABLE EXAMPLE</span>
+      <h1>See exactly what changes.</h1>
+      <p>A small synthetic contact export demonstrates the free tool's structural repair boundary.</p>
+    </header>
+
+    <section class="card">
+      <h2>Input</h2>
+      <p>The source uses semicolons, repeats the <code>Name</code> header, leaves one header empty, and contains a duplicate data row.</p>
+      <h2>Output</h2>
+      <p>The normalized file renames only the ambiguous headers. The issue report identifies all three problems with row numbers.</p>
+      <p class="boundary"><strong>No row is silently deleted.</strong> The duplicate remains in the normalized file because deleting a record can change business meaning. A paid cleanup removes or merges rows only when that rule is agreed in advance.</p>
+      <div class="files">
+        <a href="examples/messy-contacts.csv" download><strong>1. Synthetic input</strong><br>messy-contacts.csv</a>
+        <a href="examples/normalized-contacts.csv" download><strong>2. Normalized output</strong><br>normalized-contacts.csv</a>
+        <a href="examples/preflight-errors.csv" download><strong>3. Exact issue report</strong><br>preflight-errors.csv</a>
+      </div>
+    </section>
+
+    <section class="pro">
+      <div><span class="eyebrow">YOUR FILE</span><h2>Need the same evidence for a difficult import?</h2><p>Describe the shape and target importer without attaching private data. Scope and payment are agreed before work starts.</p></div>
+      <a href="https://github.com/softpeanut/csv-preflight/issues/new?template=csv-cleanup.yml" target="_blank" rel="noopener">Check project fit ↗</a>
+    </section>
+  </main>
+</body>
+</html>

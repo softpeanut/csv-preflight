@@ -1,0 +1,4 @@
+type,row,detail
+duplicate_header,1,Header “Name” is duplicated
+empty_header,1,Column 4 has an empty header
+duplicate_row,4,Duplicates row 3
