@@ -35,7 +35,7 @@ input paths through the environment rather than interpolating them into shell so
 default artifacts under the runner's temporary directory, and keeps the CLI's exit-code contract:
 
 ```yaml
-- uses: softpeanut/csv-preflight@v0.5.0
+- uses: softpeanut/csv-preflight-action@v1
   with:
     path: data/import.csv
     normalized_path: ${{ runner.temp }}/import.normalized.csv
