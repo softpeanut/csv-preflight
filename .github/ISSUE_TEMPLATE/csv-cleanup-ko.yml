@@ -1,5 +1,5 @@
 name: CSV 정리 범위 문의
-description: 민감정보가 없는 CSV 한 개가 149,000원 고정 범위에 맞는지 확인합니다.
+description: 민감정보가 없는 CSV 한 개가 39,000원 또는 149,000원 고정 범위에 맞는지 확인합니다.
 title: "CSV 정리 범위 문의: "
 labels:
   - service-inquiry
@@ -16,13 +16,21 @@ body:
       placeholder: 헤더가 반복되고 일부 행의 열 개수가 달라 가져오기가 실패합니다.
     validations:
       required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: 요청 범위
+      options:
+        - 39,000원 구조 정리 — 최대 1MB, 스키마 맞춤·수정 제외
+        - 149,000원 가져오기 맞춤 정리 — 최대 10MB, 목표 스키마 1개·수정 1회
+        - 아직 모르겠습니다
+    validations:
+      required: true
   - type: textarea
     id: target
     attributes:
       label: 목표 스키마 또는 가져오기 형식
-      description: 필요한 열 목록과 공개된 가져오기 문서가 있다면 적어 주세요.
-    validations:
-      required: true
+      description: 149,000원 범위에만 필수입니다. 필요한 열 목록과 공개된 가져오기 문서가 있다면 적어 주세요.
   - type: dropdown
     id: size
     attributes:
