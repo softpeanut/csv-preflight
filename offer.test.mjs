@@ -85,6 +85,8 @@ test("offers only the completed bounded offline batch product", () => {
   assert.match(page, /PERSONAL 15,000 \/ TEAM 100,000 SATS/);
   assert.match(page, /up to 10 named users in one legal organization/);
   assert.match(page, /up to 20 files locally/i);
+  assert.match(page, /Node\.js 20\+ CLI/);
+  assert.match(page, /JSON output, deterministic exit codes, and no-overwrite protection/);
   assert.match(page, /buyer-only private GitHub repository/);
   assert.match(page, /invoice matching the selected tier/);
   assert.match(page, /verifies its status directly/);
@@ -92,6 +94,7 @@ test("offers only the completed bounded offline batch product", () => {
   assert.match(koreanPage, /개인 15,000 \/ 팀 100,000 SATS/);
   assert.match(koreanPage, /기명 사용자 최대 10명/);
   assert.match(koreanPage, /파일 최대 20개/);
+  assert.match(koreanPage, /Node\.js 20\+ CLI/);
   assert.match(koreanPage, /선택한 등급에 맞는 이슈 전용 일회용 Lightning 인보이스/);
   assert.match(koreanPage, /template=batch-license-ko\.yml/);
   for (const terms of [proTerms, proTermsKo]) {
@@ -100,6 +103,7 @@ test("offers only the completed bounded offline batch product", () => {
     assert.match(terms, /20/);
     assert.match(terms, /SHA-256/);
     assert.match(terms, /Lightning/);
+    assert.match(terms, /CLI/);
   }
   assert.match(batchTemplate, /This public request is not payment/);
   assert.match(batchTemplate, /invoice matching the selected tier/);
