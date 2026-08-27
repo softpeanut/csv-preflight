@@ -24,6 +24,7 @@ const batchTemplate = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-licen
 const batchTemplateKo = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-license-ko.yml", import.meta.url), "utf8");
 const action = readFileSync(new URL("./action.yml", import.meta.url), "utf8");
 const shopifyGuideKo = readFileSync(new URL("./shopify-csv-guide-ko.html", import.meta.url), "utf8");
+const githubActionGuide = readFileSync(new URL("./validate-csv-github-actions.html", import.meta.url), "utf8");
 import { analyze, serializeCsv } from "./csv.mjs";
 
 test("presents a bounded service without pretending payment or booking is live", () => {
@@ -131,6 +132,14 @@ test("publishes the tested free Action without blurring the Pro boundary", () =>
   assert.match(page, /Batch, Shopify profiles, ZIP, and JSON output remain Pro features/);
   assert.match(action, /using: composite/);
   assert.match(action, /CSV_PREFLIGHT_INPUT: \$\{\{ inputs\.path \}\}/);
+  assert.match(page, /validate-csv-github-actions\.html/);
+  assert.match(githubActionGuide, /softpeanut\/csv-preflight@340b31bb16a4c39463be3378270ea6c628aa5461/);
+  assert.match(githubActionGuide, /if: always\(\)/);
+  assert.match(githubActionGuide, /contents: read/);
+  assert.match(githubActionGuide, /does not upload the CSV/);
+  assert.match(githubActionGuide, /one generic file up to 10 MiB per invocation/);
+  assert.match(githubActionGuide, /separate Pro edition processes up to 20 files/);
+  assert.doesNotMatch(githubActionGuide, /guarantees? import|official GitHub Action|Marketplace listing/i);
   assert.doesNotMatch(page, /Marketplace|official GitHub Action/i);
 });
 
@@ -164,6 +173,7 @@ test("publishes truthful search metadata for every public page", () => {
     "https://softpeanut.github.io/csv-preflight/pro-terms.html",
     "https://softpeanut.github.io/csv-preflight/pro-terms-ko.html",
     "https://softpeanut.github.io/csv-preflight/shopify-csv-guide-ko.html",
+    "https://softpeanut.github.io/csv-preflight/validate-csv-github-actions.html",
   ]) {
     assert.match(sitemap, new RegExp(`<loc>${location.replaceAll(".", "\\.")}</loc>`));
   }
