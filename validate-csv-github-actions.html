@@ -14,7 +14,7 @@
 </head>
 <body>
 <main class="article">
-  <nav><a href="./">Try CSV Preflight</a> · <a href="https://github.com/softpeanut/csv-preflight/releases/tag/v0.5.0">Action release</a> · <a href="pro-terms.html">Pro terms</a></nav>
+  <nav><a href="./">Try CSV Preflight</a> · <a href="https://github.com/softpeanut/csv-preflight-action/releases/tag/v1.0.0">Action release</a> · <a href="pro-terms.html">Pro terms</a></nav>
   <article>
     <h1>Validate CSV Files in GitHub Actions</h1>
     <p class="lede">Fail a workflow on broken structure, retain the diagnostic files, and keep the CSV on the runner.</p>
@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Check CSV structure
-        uses: softpeanut/csv-preflight@340b31bb16a4c39463be3378270ea6c628aa5461
+        uses: softpeanut/csv-preflight-action@eb04c527a46ce3bc8bfc711fde8e93ca947597ae
         with:
           path: data/import.csv
           normalized_path: ${{ runner.temp }}/import.normalized.csv
@@ -63,7 +63,7 @@ jobs:
             ${{ runner.temp }}/import.issues.csv
           if-no-files-found: warn</code></pre>
 
-    <p>The full commit SHA pins the checked v0.5.0 Action bytes. A shorter <code>@v0.5.0</code> reference is easier to read, but a full SHA prevents a tag move from changing third-party code without a workflow diff. Apply the same pinning policy to every external Action when your threat model requires immutable dependencies.</p>
+    <p>The full commit SHA pins the checked v1.0.0 Action bytes. A shorter <code>@v1</code> reference is easier to read, but a full SHA prevents a tag move from changing third-party code without a workflow diff. Apply the same pinning policy to every external Action when your threat model requires immutable dependencies.</p>
 
     <h2>What the Action checks</h2>
 
@@ -113,7 +113,7 @@ echo $?</code></pre>
 
     <p>Structural validation cannot decide whether a price is negative, a customer ID exists, or a date belongs to the required timezone. Add importer-specific schema and business-rule checks after structural parsing. Keep their reports separate so reviewers can distinguish malformed CSV from valid CSV containing invalid domain values.</p>
 
-    <p>Start with the <a href="./">browser checker</a>, inspect the <a href="https://github.com/softpeanut/csv-preflight">source and tests</a>, or use the public <a href="https://github.com/softpeanut/csv-preflight/releases/tag/v0.5.0">v0.5.0 Action release</a>. For offline batch and team use, the <a href="pro-terms.html">published Pro terms</a> describe the completed product. If you want this exact one-file workflow configured against a public or sanitized repository, the separate <a href="ci-setup-terms.html">$99 fixed-scope setup terms</a> define every deliverable and exclusion before payment.</p>
+    <p>Start with the <a href="./">browser checker</a>, inspect the <a href="https://github.com/softpeanut/csv-preflight-action">standalone Action source and tests</a>, or use the public <a href="https://github.com/softpeanut/csv-preflight-action/releases/tag/v1.0.0">v1.0.0 Action release</a>. For offline batch and team use, the <a href="pro-terms.html">published Pro terms</a> describe the completed product. If you want this exact one-file workflow configured against a public or sanitized repository, the separate <a href="ci-setup-terms.html">$99 fixed-scope setup terms</a> define every deliverable and exclusion before payment.</p>
   </article>
 </main>
 </body>
