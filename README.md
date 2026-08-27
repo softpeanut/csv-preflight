@@ -14,6 +14,20 @@ npm run benchmark
 
 Open `http://localhost:8080/experiments/csv-preflight/` when serving from the repository root, or `http://localhost:8080/` when serving this directory. Automated tests cover CSV quoting, delimiter detection, issue detection, normalization, serialization, and encoding signatures. File drag/drop and browser download behavior still require a browser smoke test.
 
+### Free command-line check
+
+Node.js 20 or newer can run the same generic structural preflight on one local file without a
+browser or dependency install:
+
+```sh
+node cli.mjs input.csv --output normalized.csv --report issues.csv
+```
+
+The free CLI returns exit 0 for a clean file, 1 for reported issues or rejected input, and 2 for an
+invocation/runtime error. It accepts UTF-8 input up to 10 MiB and refuses to overwrite the input or
+an existing output. It does not include the Pro archive's batch, Shopify-profile, ZIP, or JSON
+automation features.
+
 `npm run benchmark` regenerates a deterministic 100,001-row simple CSV in memory, verifies the
 state-machine parser and a naive splitter agree on that input, proves the naive splitter fails a
 quoted counterexample, and reports median timing over eleven runs. `benchmark-results.json` is one

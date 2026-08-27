@@ -82,6 +82,10 @@ test("optional tips cannot be mistaken for service payment", () => {
 });
 
 test("offers only the completed bounded offline batch product", () => {
+  assert.match(page, /FREE NODE\.JS 20\+ CLI/);
+  assert.match(page, /Download free CLI/);
+  assert.match(page, /one generic file per run/);
+  assert.match(koreanPage, /무료 NODE\.JS 20\+ CLI/);
   assert.match(page, /PERSONAL 15,000 \/ TEAM 100,000 SATS/);
   assert.match(page, /up to 10 named users in one legal organization/);
   assert.match(page, /up to 20 files locally/i);
