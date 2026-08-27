@@ -14,8 +14,15 @@ export function parseArgs(argv) {
   const config = { input: "", output: "", report: "" };
   for (let index = 0; index < argv.length; index++) {
     const value = argv[index];
-    if (value === "--output") config.output = argv[++index] || "";
-    else if (value === "--report") config.report = argv[++index] || "";
+    if (value === "--output") {
+      const next = argv[++index];
+      if (!next || next.startsWith("-")) throw new Error("--output needs a path");
+      config.output = next;
+    } else if (value === "--report") {
+      const next = argv[++index];
+      if (!next || next.startsWith("-")) throw new Error("--report needs a path");
+      config.report = next;
+    }
     else if (value === "--help" || value === "-h") config.help = true;
     else if (value.startsWith("-")) throw new Error(`Unknown option: ${value}`);
     else if (config.input) throw new Error("The free CLI accepts exactly one input file");

@@ -10,6 +10,7 @@ test("free CLI accepts one input and keeps all paths distinct", () => {
   assert.match(config.report, /input\.issues\.csv$/);
   assert.throws(() => parseArgs(["one.csv", "two.csv"]), /exactly one/);
   assert.throws(() => parseArgs(["input.csv", "--output", "input.csv"]), /must be different/);
+  assert.throws(() => parseArgs(["input.csv", "--output"]), /needs a path/);
 });
 
 test("free CLI writes a clean normalized file and report", () => {
