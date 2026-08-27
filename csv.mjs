@@ -144,6 +144,15 @@ export function analyzeShopifyProduct(rows, delimiter, mode) {
   validateValues('Weight unit for display', value => ['g', 'kg', 'lb', 'oz'].includes(value), 'use g, kg, lb, or oz');
   validateValues('Weight value (grams)', value => /^\d+$/.test(value), 'use a whole number without a unit');
   validateValues('Price', value => /^\d+(?:\.\d+)?$/.test(value), 'use a number without a currency symbol');
+  validateValues('Compare-at price', value => /^\d+(?:\.\d+)?$/.test(value), 'use a number without a currency symbol');
+  validateValues('Cost per item', value => /^\d+(?:\.\d+)?$/.test(value), 'use a number without a currency symbol');
+  validateValues('Inventory quantity', value => /^-?\d+$/.test(value), 'use a whole number');
+  validateValues('Inventory tracker', value => ['shopify', 'shipwire', 'amazon_marketplace_web'].includes(value), 'use shopify, shipwire, amazon_marketplace_web, or leave blank');
+  validateValues('Image position', value => /^[1-9]\d*$/.test(value), 'use a positive whole number starting at 1');
+  validateValues('Gift card', value => ['true', 'false'].includes(value), 'use true or false');
+  validateValues('Fulfillment service', value => ['manual', 'shipwire', 'webgistix', 'amazon_marketplace_web', 'gift_card'].includes(value) || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value), 'use a supported service or a lowercase custom-service handle');
+  validateValues('Tags', value => value.split(',').length <= 250, 'use no more than 250 comma-separated tags');
+  validateValues('Collection', value => value.length <= 255, 'use no more than 255 characters');
   validateValues('Product image URL', value => {
     try { return new URL(value).protocol === 'https:'; } catch { return false; }
   }, 'use a public HTTPS image URL');
@@ -153,6 +162,27 @@ export function analyzeShopifyProduct(rows, delimiter, mode) {
   validateValues('Image alt text', value => value.length <= 512, 'use no more than 512 characters');
   validateValues('SEO title', value => value.length <= 70, 'use no more than 70 characters');
   validateValues('SEO description', value => value.length <= 320, 'use no more than 320 characters');
+
+  if (exactIndex('Fulfillment service') >= 0) {
+    const builtIns = new Set(['', 'manual', 'shipwire', 'webgistix', 'amazon_marketplace_web', 'gift_card']);
+    data.forEach((row, index) => {
+      const service = valueAt(row, 'Fulfillment service');
+      if (!builtIns.has(service) && !valueAt(row, 'SKU')) {
+        issues.push({ type: 'shopify_dependency', row: index + 2, detail: 'A custom Fulfillment service requires a non-blank SKU' });
+      }
+    });
+  }
+
+  if (exactIndex('Product image URL') >= 0 && hasHandle) {
+    const imageCounts = new Map();
+    data.forEach((row, index) => {
+      const handle = valueAt(row, 'URL handle');
+      if (!handle || !valueAt(row, 'Product image URL')) return;
+      const count = (imageCounts.get(handle) || 0) + 1;
+      imageCounts.set(handle, count);
+      if (count > 250) issues.push({ type: 'shopify_limit', row: index + 2, detail: `URL handle “${handle}” has more than 250 product images` });
+    });
+  }
 
   return issues;
 }
