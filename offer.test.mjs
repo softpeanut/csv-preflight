@@ -26,6 +26,7 @@ const action = readFileSync(new URL("./action.yml", import.meta.url), "utf8");
 const shopifyGuideKo = readFileSync(new URL("./shopify-csv-guide-ko.html", import.meta.url), "utf8");
 const githubActionGuide = readFileSync(new URL("./validate-csv-github-actions.html", import.meta.url), "utf8");
 const ciSetupTerms = readFileSync(new URL("./ci-setup-terms.html", import.meta.url), "utf8");
+const ciSetupTermsZhCn = readFileSync(new URL("./ci-setup-terms-zh-CN.html", import.meta.url), "utf8");
 const ciSetupTemplate = readFileSync(new URL("./.github/ISSUE_TEMPLATE/ci-setup.yml", import.meta.url), "utf8");
 import { analyze, serializeCsv } from "./csv.mjs";
 
@@ -165,6 +166,19 @@ test("offers a bounded $99 one-repository CI setup without collecting secrets", 
   assert.doesNotMatch(page, /Buy now|Book now|instant setup/i);
 });
 
+test("publishes equivalent bounded Chinese terms for the catalog audience", () => {
+  assert.match(ciSetupTermsZhCn, /固定价格为 USD 99/);
+  assert.match(ciSetupTermsZhCn, /一个公开 GitHub 仓库或经过脱敏的最小复现/);
+  assert.match(ciSetupTermsZhCn, /最大 10 MiB/);
+  assert.match(ciSetupTermsZhCn, /三个工作日/);
+  assert.match(ciSetupTermsZhCn, /一次性 BOLT11 Lightning invoice/);
+  assert.match(ciSetupTermsZhCn, /工作开始前取消/);
+  assert.match(ciSetupTermsZhCn, /七个自然日内提出的一次范围内修改/);
+  assert.match(ciSetupTermsZhCn, /不会索取私有仓库访问权限、凭据或真实 CSV 内容/);
+  assert.match(ciSetupTermsZhCn, /template=ci-setup\.yml/);
+  assert.doesNotMatch(ciSetupTermsZhCn, /立即购买|立即预订|保证导入/);
+});
+
 test("publishes a bounded Korean Shopify CSV troubleshooting guide", () => {
   assert.match(koreanPage, /shopify-csv-guide-ko\.html/);
   assert.match(shopifyGuideKo, /UTF-8과 쉼표 구분/);
@@ -197,6 +211,7 @@ test("publishes truthful search metadata for every public page", () => {
     "https://softpeanut.github.io/csv-preflight/shopify-csv-guide-ko.html",
     "https://softpeanut.github.io/csv-preflight/validate-csv-github-actions.html",
     "https://softpeanut.github.io/csv-preflight/ci-setup-terms.html",
+    "https://softpeanut.github.io/csv-preflight/ci-setup-terms-zh-CN.html",
   ]) {
     assert.match(sitemap, new RegExp(`<loc>${location.replaceAll(".", "\\.")}</loc>`));
   }
