@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { basename, dirname, extname, join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 
 function detectEncoding(bytes) {
   if (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) return { encoding: "UTF-8 BOM", offset: 3, supported: true };
@@ -168,6 +168,12 @@ export function runCli(argv, io = {}) {
   }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+export function isMain(metaUrl, argvPath, realpath = realpathSync) {
+  if (!argvPath) return false;
+  try { return realpath(fileURLToPath(metaUrl)) === realpath(argvPath); }
+  catch { return false; }
+}
+
+if (isMain(import.meta.url, process.argv[1])) {
   process.exitCode = runCli(process.argv.slice(2));
 }
