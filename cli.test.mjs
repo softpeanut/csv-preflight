@@ -1,13 +1,19 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { parseArgs, runCli } from "./cli.mjs";
+import { isMain, parseArgs, runCli } from "./cli.mjs";
 
 const bytes = text => new TextEncoder().encode(text);
 
 test("downloaded CLI has no relative module dependency", () => {
   const source = readFileSync(new URL("./cli.mjs", import.meta.url), "utf8");
   assert.doesNotMatch(source, /from ["']\.\//);
+});
+
+test("CLI recognizes a main path through a canonicalized symlink", () => {
+  const canonicalize = path => path.replace(/^\/tmp\//, "/private/tmp/");
+  assert.equal(isMain("file:///private/tmp/tool.mjs", "/tmp/tool.mjs", canonicalize), true);
+  assert.equal(isMain("file:///private/tmp/tool.mjs", "/tmp/other.mjs", canonicalize), false);
 });
 
 test("free CLI accepts one input and keeps all paths distinct", () => {
