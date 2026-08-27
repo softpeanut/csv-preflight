@@ -22,6 +22,7 @@ const proTerms = readFileSync(new URL("./pro-terms.html", import.meta.url), "utf
 const proTermsKo = readFileSync(new URL("./pro-terms-ko.html", import.meta.url), "utf8");
 const batchTemplate = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-license.yml", import.meta.url), "utf8");
 const batchTemplateKo = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-license-ko.yml", import.meta.url), "utf8");
+const action = readFileSync(new URL("./action.yml", import.meta.url), "utf8");
 const shopifyGuideKo = readFileSync(new URL("./shopify-csv-guide-ko.html", import.meta.url), "utf8");
 import { analyze, serializeCsv } from "./csv.mjs";
 
@@ -120,6 +121,17 @@ test("offers only the completed bounded offline batch product", () => {
   assert.match(batchTemplateKo, /CSV 내용, 파일명, 연락처/);
   assert.doesNotMatch(batchTemplate, /type: textarea/);
   assert.doesNotMatch(batchTemplateKo, /type: textarea/);
+});
+
+test("publishes the tested free Action without blurring the Pro boundary", () => {
+  assert.match(page, /FREE GITHUB ACTION · v0\.5\.0/);
+  assert.match(page, /softpeanut\/csv-preflight@v0\.5\.0/);
+  assert.match(page, /keeps the file on the runner/);
+  assert.match(page, /One generic UTF-8 CSV up to 10 MiB/);
+  assert.match(page, /Batch, Shopify profiles, ZIP, and JSON output remain Pro features/);
+  assert.match(action, /using: composite/);
+  assert.match(action, /CSV_PREFLIGHT_INPUT: \$\{\{ inputs\.path \}\}/);
+  assert.doesNotMatch(page, /Marketplace|official GitHub Action/i);
 });
 
 test("publishes a bounded Korean Shopify CSV troubleshooting guide", () => {
