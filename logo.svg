@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">CSV Preflight</title>
+  <desc id="desc">A checked table on a dark green square.</desc>
+  <rect width="512" height="512" rx="104" fill="#193d2d"/>
+  <rect x="104" y="104" width="304" height="228" rx="28" fill="#edf1e9"/>
+  <path d="M104 180h304M205 104v228M306 104v228" fill="none" stroke="#193d2d" stroke-width="18"/>
+  <circle cx="361" cy="363" r="82" fill="#c24d2c"/>
+  <path d="m319 363 28 29 58-64" fill="none" stroke="#fff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
