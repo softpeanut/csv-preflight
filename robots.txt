@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://softpeanut.github.io/csv-preflight/sitemap.xml
