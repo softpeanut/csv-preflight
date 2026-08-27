@@ -9,7 +9,7 @@ body:
       value: |
         This public request is not payment. Do not post CSV content, filenames, contact details, payment proof, credentials, or private links.
 
-        After availability is confirmed, the seller posts the 15,000 sat quote and receiving address with a 30-minute payment window. Pay only after accepting the written terms. After verified payment, the licensed ZIP is delivered within one business day through a buyer-only private GitHub repository.
+        After availability is confirmed, the seller posts an issue-bound, single-use 15,000 sat BOLT11 invoice with a 30-minute payment window. Pay only after accepting the written terms. The invoice status endpoint lets the seller verify settlement without public payment proof. After verified payment, the licensed ZIP is delivered within one business day through a buyer-only private GitHub repository.
 
         Terms: https://softpeanut.github.io/csv-preflight/pro-terms.html
   - type: dropdown
@@ -37,7 +37,7 @@ body:
     attributes:
       label: Order boundaries
       options:
-        - label: I will not pay before the seller confirms the exact quote and address in this issue.
+        - label: I will not pay before the seller posts the issue-bound 15,000 sat invoice in this issue.
           required: true
         - label: I agree to receive the archive through a buyer-only private GitHub repository.
           required: true

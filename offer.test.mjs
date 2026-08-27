@@ -85,9 +85,12 @@ test("offers only the completed bounded offline batch product", () => {
   assert.match(page, /OFFLINE BATCH EDITION · 15,000 SATS/);
   assert.match(page, /up to 20 files locally/i);
   assert.match(page, /buyer-only private GitHub repository/);
+  assert.match(page, /issue-bound single-use 15,000 sat Lightning invoice/);
+  assert.match(page, /verifies its status directly/);
   assert.match(page, /template=batch-license\.yml/);
   assert.match(koreanPage, /오프라인 배치판 · 15,000 SATS/);
   assert.match(koreanPage, /파일 최대 20개/);
+  assert.match(koreanPage, /이슈 전용 일회용 15,000 sats Lightning 인보이스/);
   assert.match(koreanPage, /template=batch-license-ko\.yml/);
   for (const terms of [proTerms, proTermsKo]) {
     assert.match(terms, /15,000/);
@@ -96,9 +99,11 @@ test("offers only the completed bounded offline batch product", () => {
     assert.match(terms, /Lightning/);
   }
   assert.match(batchTemplate, /This public request is not payment/);
-  assert.match(batchTemplate, /30-minute payment window/);
+  assert.match(batchTemplate, /issue-bound, single-use 15,000 sat BOLT11 invoice/);
+  assert.match(batchTemplate, /status endpoint lets the seller verify settlement/);
   assert.match(batchTemplate, /Do not post CSV content, filenames/);
   assert.match(batchTemplateKo, /이 공개 요청 자체는 결제가 아닙니다/);
+  assert.match(batchTemplateKo, /이슈에만 연결된 일회용 15,000 sats BOLT11 인보이스/);
   assert.match(batchTemplateKo, /CSV 내용, 파일명, 연락처/);
   assert.doesNotMatch(batchTemplate, /type: textarea/);
   assert.doesNotMatch(batchTemplateKo, /type: textarea/);
