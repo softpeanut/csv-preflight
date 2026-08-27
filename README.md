@@ -53,6 +53,14 @@ headers and dynamic columns, so the tool avoids pretending it can reject every u
 
 ## Fixed-scope cleanup pilot
 
+The completed **CSV Preflight Pro offline batch edition** is offered as a 15,000 sat one-time
+personal/internal-business license. It processes 1–20 local UTF-8 CSV files per run, creates
+comma-separated normalized files, per-file issue reports, and one manifest, and includes the
+generic and bounded Shopify profiles. The licensed seller-held archive is complete and is not part
+of this public free-tool repository. Buyers request an order without posting data, receive a
+written 30-minute payment window, and receive the archive through a buyer-only private GitHub
+repository after verified payment. Product terms and the separate service scope remain distinct.
+
 The checker remains free. A **$29 structural cleanup** covers one CSV up to 1 MB, a normalized CSV,
 and a machine-readable issue report; it excludes schema mapping and revisions. A separate **$99
 importer-fit cleanup** covers one CSV up to 10 MB, one target schema—including one bounded Shopify

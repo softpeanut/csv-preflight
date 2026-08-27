@@ -1,0 +1,47 @@
+name: CSV Preflight Pro order request
+description: Request the 15,000 sat offline batch license without posting data.
+title: "CSV Preflight Pro order request"
+labels:
+  - product-order
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This public request is not payment. Do not post CSV content, filenames, contact details, payment proof, credentials, or private links.
+
+        After availability is confirmed, the seller posts the 15,000 sat quote and receiving address with a 30-minute payment window. Pay only after accepting the written terms. After verified payment, the licensed ZIP is delivered within one business day through a buyer-only private GitHub repository.
+
+        Terms: https://softpeanut.github.io/csv-preflight/pro-terms.html
+  - type: dropdown
+    id: batch-size
+    attributes:
+      label: Expected files per run
+      options:
+        - 2–5 files
+        - 6–10 files
+        - 11–20 files
+    validations:
+      required: true
+  - type: dropdown
+    id: profile
+    attributes:
+      label: Main validation profile
+      options:
+        - Generic CSV structure
+        - Shopify — new products
+        - Shopify — update products
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Order boundaries
+      options:
+        - label: I will not pay before the seller confirms the exact quote and address in this issue.
+          required: true
+        - label: I agree to receive the archive through a buyer-only private GitHub repository.
+          required: true
+        - label: I posted no data, filenames, contact details, payment proof, credentials, or private links.
+          required: true
+        - label: I will not process sensitive or regulated data with this product.
+          required: true

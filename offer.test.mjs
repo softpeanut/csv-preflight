@@ -18,6 +18,10 @@ const caseStudy = readFileSync(new URL("./case-study.html", import.meta.url), "u
 const caseInput = readFileSync(new URL("./examples/messy-contacts.csv", import.meta.url), "utf8");
 const caseOutput = readFileSync(new URL("./examples/normalized-contacts.csv", import.meta.url), "utf8");
 const caseReport = readFileSync(new URL("./examples/preflight-errors.csv", import.meta.url), "utf8");
+const proTerms = readFileSync(new URL("./pro-terms.html", import.meta.url), "utf8");
+const proTermsKo = readFileSync(new URL("./pro-terms-ko.html", import.meta.url), "utf8");
+const batchTemplate = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-license.yml", import.meta.url), "utf8");
+const batchTemplateKo = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-license-ko.yml", import.meta.url), "utf8");
 import { analyze, serializeCsv } from "./csv.mjs";
 
 test("presents a bounded service without pretending payment or booking is live", () => {
@@ -76,6 +80,29 @@ test("optional tips cannot be mistaken for service payment", () => {
   assert.match(koreanPage, /고정 범위 서비스와 별개입니다/);
 });
 
+test("offers only the completed bounded offline batch product", () => {
+  assert.match(page, /OFFLINE BATCH EDITION · 15,000 SATS/);
+  assert.match(page, /up to 20 files locally/i);
+  assert.match(page, /buyer-only private GitHub repository/);
+  assert.match(page, /template=batch-license\.yml/);
+  assert.match(koreanPage, /오프라인 배치판 · 15,000 SATS/);
+  assert.match(koreanPage, /파일 최대 20개/);
+  assert.match(koreanPage, /template=batch-license-ko\.yml/);
+  for (const terms of [proTerms, proTermsKo]) {
+    assert.match(terms, /15,000/);
+    assert.match(terms, /20/);
+    assert.match(terms, /SHA-256/);
+    assert.match(terms, /Lightning/);
+  }
+  assert.match(batchTemplate, /This public request is not payment/);
+  assert.match(batchTemplate, /30-minute payment window/);
+  assert.match(batchTemplate, /Do not post CSV content, filenames/);
+  assert.match(batchTemplateKo, /이 공개 요청 자체는 결제가 아닙니다/);
+  assert.match(batchTemplateKo, /CSV 내용, 파일명, 연락처/);
+  assert.doesNotMatch(batchTemplate, /type: textarea/);
+  assert.doesNotMatch(batchTemplateKo, /type: textarea/);
+});
+
 test("publishes truthful search metadata for every public page", () => {
   const structuredDataMatch = page.match(
     /<script type="application\/ld\+json">([^<]+)<\/script>/,
@@ -91,6 +118,8 @@ test("publishes truthful search metadata for every public page", () => {
     "https://softpeanut.github.io/csv-preflight/ko.html",
     "https://softpeanut.github.io/csv-preflight/article.html",
     "https://softpeanut.github.io/csv-preflight/case-study.html",
+    "https://softpeanut.github.io/csv-preflight/pro-terms.html",
+    "https://softpeanut.github.io/csv-preflight/pro-terms-ko.html",
   ]) {
     assert.match(sitemap, new RegExp(`<loc>${location.replaceAll(".", "\\.")}</loc>`));
   }
