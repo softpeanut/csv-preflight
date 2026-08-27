@@ -15,7 +15,7 @@ export function guessDelimiter(text) {
   const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/).filter(Boolean).slice(0, 20);
   let best = { delimiter: ",", score: -1 };
   for (const delimiter of candidates) {
-    const widths = lines.map(line => parseCsv(line, delimiter).rows[0].length);
+    const widths = lines.map(line => parseCsv(line, delimiter).rows[0]?.length ?? 0);
     const common = widths.reduce((map, width) => map.set(width, (map.get(width) || 0) + 1), new Map());
     const [width, frequency] = [...common].sort((a, b) => b[1] - a[1])[0] || [1, 0];
     const score = width > 1 ? frequency * 100 + width : 0;

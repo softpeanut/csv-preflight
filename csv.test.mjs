@@ -4,6 +4,7 @@ test("detects common delimiter",()=>assert.equal(guessDelimiter("a;b;c\n1;2;3\n4
 test("reports structural issues without deleting or reshaping data rows",()=>{const r=analyze("name,name,\nAda,A,1\nAda,A,1\nBob,B\nEve,E,2,extra"); assert.deepEqual(r.issues.map(x=>x.type),["duplicate_header","empty_header","duplicate_row","column_count","column_count"]); assert.deepEqual(r.cleanRows,[['name','name_2','column_3'],['Ada','A','1'],['Ada','A','1'],['Bob','B'],['Eve','E','2','extra']]);});
 test("serializes values without losing CSV syntax",()=>assert.equal(serializeCsv([["a,b",'x"y'],["line\nbreak",""]]),'"a,b","x""y"\r\n"line\nbreak",\r\n'));
 test("surfaces UTF BOM and invalid UTF-8",()=>{assert.equal(detectEncoding(Uint8Array.from([0xef,0xbb,0xbf,65])).encoding,"UTF-8 BOM"); assert.equal(detectEncoding(Uint8Array.from([0xff,0xfe,65,0])).supported,false); assert.equal(detectEncoding(Uint8Array.from([0xc3,0x28])).supported,false);});
+test("reports an unclosed quoted field instead of crashing delimiter detection",()=>{const result=analyze('a,b\n"open,b'); assert.deepEqual(result.issues.map(issue=>issue.type),["parse"]); assert.match(result.issues[0].detail,/Unclosed quoted field/);});
 test("checks Shopify create and update header contracts without changing rows",()=>{
   const createRows=parseCsv("title,Option1 name,Option1 value\nShirt,Size,M").rows;
   assert.deepEqual(analyzeShopifyProduct(createRows,",","create").map(x=>x.type),["shopify_header_case","shopify_missing_header"]);
