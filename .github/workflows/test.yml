@@ -30,3 +30,16 @@ jobs:
           test "$status" -eq 1
           test -s "$RUNNER_TEMP/normalized.csv"
           test -s "$RUNNER_TEMP/issues.csv"
+      - name: Verify local Action contract
+        id: local-action
+        continue-on-error: true
+        uses: ./
+        with:
+          path: examples/messy-contacts.csv
+      - name: Assert Action failure and artifacts
+        env:
+          ACTION_OUTCOME: ${{ steps.local-action.outcome }}
+        run: |
+          test "$ACTION_OUTCOME" = failure
+          test -s "$RUNNER_TEMP/csv-preflight.normalized.csv"
+          test -s "$RUNNER_TEMP/csv-preflight.issues.csv"
