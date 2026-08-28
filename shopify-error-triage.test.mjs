@@ -61,6 +61,8 @@ test("publishes a local-only bounded triage page with no data intake or network 
   assert.match(page, /does not access a store, fetch images/);
   assert.match(page, /does not .*guarantee an import/);
   assert.match(page, /Unknown messages stay unknown/);
+  assert.match(page, /10,000-reference message comes from a .*current Shopify Community report/);
+  assert.match(page, /community-observed rather than official documentation/);
   assert.match(page, /template=csv-cleanup\.yml/);
   assert.doesNotMatch(page, /<form[^>]+\saction=|checkout|guarantees? (?:a successful )?import/i);
   assert.doesNotMatch(`${page}\n${app}`, /fetch\s*\(|XMLHttpRequest|localStorage|sessionStorage|sendBeacon|WebSocket/);
