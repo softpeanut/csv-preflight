@@ -25,6 +25,7 @@ const batchTemplate = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-licen
 const batchTemplateKo = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-license-ko.yml", import.meta.url), "utf8");
 const action = readFileSync(new URL("./action.yml", import.meta.url), "utf8");
 const shopifyGuideKo = readFileSync(new URL("./shopify-csv-guide-ko.html", import.meta.url), "utf8");
+const shopifyErrorTriage = readFileSync(new URL("./shopify-csv-error-triage.html", import.meta.url), "utf8");
 const githubActionGuide = readFileSync(new URL("./validate-csv-github-actions.html", import.meta.url), "utf8");
 const ciSetupTerms = readFileSync(new URL("./ci-setup-terms.html", import.meta.url), "utf8");
 const ciSetupTermsZhCn = readFileSync(new URL("./ci-setup-terms-zh-CN.html", import.meta.url), "utf8");
@@ -189,7 +190,16 @@ test("publishes a bounded Korean Shopify CSV troubleshooting guide", () => {
   assert.match(shopifyGuideKo, /닫히지 않은 따옴표/);
   assert.match(shopifyGuideKo, /가져오기 성공 보장이 아니라/);
   assert.match(shopifyGuideKo, /help\.shopify\.com\/en\/manual\/products\/import-export\/common-import-issues/);
+  assert.match(shopifyGuideKo, /shopify-csv-error-triage\.html/);
   assert.doesNotMatch(shopifyGuideKo, /공식 도구|Shopify 인증|모든 오류/);
+});
+
+test("links the exact-error triage entry point without overstating its scope", () => {
+  assert.match(page, /shopify-csv-error-triage\.html/);
+  assert.match(shopifyErrorTriage, /Nothing is uploaded, stored, or sent/);
+  assert.match(shopifyErrorTriage, /Unknown messages stay unknown/);
+  assert.match(shopifyErrorTriage, /not affiliated with Shopify/);
+  assert.doesNotMatch(shopifyErrorTriage, /Shopify approved|official checker|guaranteed fix/i);
 });
 
 test("publishes truthful search metadata for every public page", () => {
@@ -211,6 +221,7 @@ test("publishes truthful search metadata for every public page", () => {
     "https://softpeanut.github.io/csv-preflight/pro-terms.html",
     "https://softpeanut.github.io/csv-preflight/pro-terms-ko.html",
     "https://softpeanut.github.io/csv-preflight/shopify-csv-guide-ko.html",
+    "https://softpeanut.github.io/csv-preflight/shopify-csv-error-triage.html",
     "https://softpeanut.github.io/csv-preflight/validate-csv-github-actions.html",
     "https://softpeanut.github.io/csv-preflight/ci-setup-terms.html",
     "https://softpeanut.github.io/csv-preflight/ci-setup-terms-zh-CN.html",

@@ -83,6 +83,14 @@ The preset does not fetch image URLs, inspect a store, validate dynamic Markets/
 cover every column dependency, or guarantee that Shopify accepts a file. Shopify supports older
 headers and dynamic columns, so the tool avoids pretending it can reject every unknown header.
 
+### Exact-error triage
+
+`shopify-csv-error-triage.html` accepts only one Shopify import error message, matches it against
+the current documented error families, and explains whether the next check belongs to the local
+file, store state, or an external image/taxonomy resource. The classifier is deterministic and
+local-only: it has no upload, store login, fetch, storage, analytics, or unknown-error guess. It is
+an entry point into the existing free checker, not a claim that every Shopify error is detectable.
+
 ## Fixed-scope cleanup pilot
 
 The completed **CSV Preflight Pro offline batch edition** is offered as a 15,000 sat Personal
