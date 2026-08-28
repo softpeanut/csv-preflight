@@ -17,10 +17,16 @@ Open `http://localhost:8080/experiments/csv-preflight/` when serving from the re
 ### Free command-line check
 
 Node.js 20 or newer can run the same generic structural preflight on one local file without a
-browser or dependency install:
+browser. The repository copy works without an install:
 
 ```sh
 node cli.mjs input.csv --output normalized.csv --report issues.csv
+```
+
+Version 0.6.0 prepares the same command for npm publication:
+
+```sh
+npx csv-preflight input.csv --output normalized.csv --report issues.csv
 ```
 
 The free CLI returns exit 0 for a clean file, 1 for reported issues or rejected input, and 2 for an

@@ -148,10 +148,11 @@ export function runCli(argv, io = {}) {
       issues = [{ type: "encoding", row: null, detail: `${detected.encoding} is not supported; export as UTF-8` }];
     } else {
       const text = new TextDecoder("utf-8", { fatal: true }).decode(bytes.slice(detected.offset));
-      const result = analyze(text);
+      const delimiter = guessDelimiter(text);
+      const result = analyze(text, delimiter);
       issues = result.issues;
       if (!issues.some(issue => issue.type === "parse" || issue.type === "empty")) {
-        normalized = new TextEncoder().encode(`\uFEFF${serializeCsv(result.cleanRows)}`);
+        normalized = new TextEncoder().encode(`\uFEFF${serializeCsv(result.cleanRows, delimiter)}`);
       }
     }
     const targets = normalized ? [config.output, config.report] : [config.report];

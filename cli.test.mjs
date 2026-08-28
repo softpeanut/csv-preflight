@@ -36,6 +36,19 @@ test("free CLI writes a clean normalized file and report", () => {
   assert.match(new TextDecoder().decode(writes[1].data), /type,row,detail/);
 });
 
+test("free CLI preserves the detected delimiter in normalized output", () => {
+  const writes = [];
+  const exit = runCli(["input.csv", "--output", "clean.csv", "--report", "report.csv"], {
+    readFile: () => bytes("name;price\nMug;12"),
+    outputExists: () => false,
+    writeFile: (file, data) => writes.push({ file, data }),
+    stdout: () => {},
+    stderr: () => {},
+  });
+  assert.equal(exit, 0);
+  assert.match(new TextDecoder().decode(writes[0].data), /name;price\r\nMug;12/);
+});
+
 test("free CLI reports warnings and withholds rejected output", () => {
   const warningWrites = [];
   const common = { outputExists: () => false, stdout: () => {}, stderr: () => {} };
