@@ -29,6 +29,8 @@ const githubActionGuide = readFileSync(new URL("./validate-csv-github-actions.ht
 const ciSetupTerms = readFileSync(new URL("./ci-setup-terms.html", import.meta.url), "utf8");
 const ciSetupTermsZhCn = readFileSync(new URL("./ci-setup-terms-zh-CN.html", import.meta.url), "utf8");
 const ciSetupTemplate = readFileSync(new URL("./.github/ISSUE_TEMPLATE/ci-setup.yml", import.meta.url), "utf8");
+const supportPage = readFileSync(new URL("./support.html", import.meta.url), "utf8");
+const funding = readFileSync(new URL("./.github/FUNDING.yml", import.meta.url), "utf8");
 import { analyze, serializeCsv } from "./csv.mjs";
 
 test("presents a bounded service without pretending payment or booking is live", () => {
@@ -85,6 +87,12 @@ test("optional tips cannot be mistaken for service payment", () => {
   assert.match(koreanPage, /2 sats 이상 팁/);
   assert.match(koreanPage, /정리 작업·지원·기능·가져오기 성공을 구매하지 않습니다/);
   assert.match(koreanPage, /고정 범위 서비스와 별개입니다/);
+  assert.match(page, /support\.html/);
+  assert.match(supportPage, /lightning:softpeanut@stacker\.news/);
+  assert.match(supportPage, /buys no product, cleanup, support, feature, priority, service, guarantee, or tax receipt/);
+  assert.match(supportPage, /Do not send CSV data, credentials, contact details, or payment proof/);
+  assert.match(supportPage, /If you intend to buy a product or service, do not use this link/);
+  assert.equal(funding.trim(), 'custom: "https://softpeanut.github.io/csv-preflight/support.html"');
 });
 
 test("offers only the completed bounded offline batch product", () => {
@@ -214,6 +222,7 @@ test("publishes truthful search metadata for every public page", () => {
     "https://softpeanut.github.io/csv-preflight/validate-csv-github-actions.html",
     "https://softpeanut.github.io/csv-preflight/ci-setup-terms.html",
     "https://softpeanut.github.io/csv-preflight/ci-setup-terms-zh-CN.html",
+    "https://softpeanut.github.io/csv-preflight/support.html",
   ]) {
     assert.match(sitemap, new RegExp(`<loc>${location.replaceAll(".", "\\.")}</loc>`));
   }
