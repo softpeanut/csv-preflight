@@ -1,1 +1,39 @@
-{"type":"module","scripts":{"test":"node --test","benchmark":"node benchmark.mjs","benchmark:record":"node benchmark.mjs --write"},"engines":{"node":"22.x"},"private":true}
+{
+  "name": "csv-preflight",
+  "version": "0.6.0",
+  "description": "Check one CSV for structural problems before import",
+  "type": "module",
+  "bin": {
+    "csv-preflight": "cli.mjs"
+  },
+  "files": [
+    "cli.mjs",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "benchmark": "node benchmark.mjs",
+    "benchmark:record": "node benchmark.mjs --write",
+    "prepack": "npm test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "csv",
+    "validator",
+    "cli",
+    "data-quality",
+    "preflight"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/softpeanut/csv-preflight.git"
+  },
+  "homepage": "https://softpeanut.github.io/csv-preflight/",
+  "bugs": "https://github.com/softpeanut/csv-preflight/issues",
+  "publishConfig": {
+    "access": "public"
+  }
+}
