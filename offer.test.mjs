@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 
 const page = readFileSync(new URL("./index.html", import.meta.url), "utf8");
 const template = readFileSync(
@@ -21,8 +21,8 @@ const caseOutput = readFileSync(new URL("./examples/normalized-contacts.csv", im
 const caseReport = readFileSync(new URL("./examples/preflight-errors.csv", import.meta.url), "utf8");
 const proTerms = readFileSync(new URL("./pro-terms.html", import.meta.url), "utf8");
 const proTermsKo = readFileSync(new URL("./pro-terms-ko.html", import.meta.url), "utf8");
-const batchTemplate = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-license.yml", import.meta.url), "utf8");
-const batchTemplateKo = readFileSync(new URL("./.github/ISSUE_TEMPLATE/batch-license-ko.yml", import.meta.url), "utf8");
+const proPage = readFileSync(new URL("./pro.html", import.meta.url), "utf8");
+const issueConfig = readFileSync(new URL("./.github/ISSUE_TEMPLATE/config.yml", import.meta.url), "utf8");
 const action = readFileSync(new URL("./action.yml", import.meta.url), "utf8");
 const shopifyGuideKo = readFileSync(new URL("./shopify-csv-guide-ko.html", import.meta.url), "utf8");
 const githubActionGuide = readFileSync(new URL("./validate-csv-github-actions.html", import.meta.url), "utf8");
@@ -87,45 +87,47 @@ test("optional tips cannot be mistaken for service payment", () => {
   assert.match(koreanPage, /고정 범위 서비스와 별개입니다/);
 });
 
-test("offers only the completed bounded offline batch product", () => {
+test("routes Pro visitors to current launch status without accepting retired orders", () => {
   assert.match(page, /FREE NODE\.JS 20\+ CLI/);
   assert.match(page, /Download free CLI/);
   assert.match(page, /one generic file per run/);
   assert.match(koreanPage, /무료 NODE\.JS 20\+ CLI/);
-  assert.match(page, /PERSONAL 15,000 \/ TEAM 100,000 SATS/);
-  assert.match(page, /up to 10 named users in one legal organization/);
-  assert.match(page, /up to 20 files locally/i);
-  assert.match(page, /Node\.js 20\+ CLI/);
-  assert.match(page, /JSON output, deterministic exit codes, and no-overwrite protection/);
-  assert.match(page, /buyer-only private GitHub repository/);
-  assert.match(page, /invoice matching the selected tier/);
-  assert.match(page, /verifies its status directly/);
-  assert.match(page, /template=batch-license\.yml/);
-  assert.match(koreanPage, /개인 15,000 \/ 팀 100,000 SATS/);
-  assert.match(koreanPage, /기명 사용자 최대 10명/);
-  assert.match(koreanPage, /파일 최대 20개/);
-  assert.match(koreanPage, /Node\.js 20\+ CLI/);
-  assert.match(koreanPage, /선택한 등급에 맞는 이슈 전용 일회용 Lightning 인보이스/);
-  assert.match(koreanPage, /template=batch-license-ko\.yml/);
+  for (const entry of [page, koreanPage, shopifyGuideKo]) {
+    assert.match(entry, /href="pro\.html(?:#ko)?"/);
+    assert.doesNotMatch(entry, /template=batch-license|15,000|100,000|Start Pro order|Pro 주문 요청/);
+  }
+  assert.match(page, /Sales are not open/);
+  assert.match(koreanPage, /아직 판매하지 않습니다/);
+  assert.match(proPage, /1\.2\.4/);
+  assert.match(proPage, /1–20 UTF-8 CSV files/);
+  assert.match(proPage, /10 MiB each and 20 MiB combined/);
+  assert.match(proPage, /Node\.js 20\+ CLI/i);
+  assert.match(proPage, /JSON output, distinct exit codes/);
+  assert.match(proPage, /Personal — \$19/);
+  assert.match(proPage, /Team — \$79/);
+  assert.match(proPage, /up to 10 users working for one legal organization/);
+  assert.match(proPage, /there is no checkout/);
+  assert.match(proPage, /former Lightning order route is retired/);
+  assert.match(proPage, /Do not send a Pro payment or open a public order issue/);
+  assert.match(proPage, /tip to the free tool does not purchase a Pro license/);
+  assert.match(proPage, /WooCommerce/);
+  assert.match(proPage, /not the full Pro package/);
+  assert.doesNotMatch(proPage, /<form|<script|href="(?:lightning:|https?:\/\/api\.polar\.sh)/i);
+  for (const name of ["batch-license.yml", "batch-license-ko.yml"]) {
+    assert.equal(existsSync(new URL(`./.github/ISSUE_TEMPLATE/${name}`, import.meta.url)), false);
+  }
+  assert.match(issueConfig, /url: https:\/\/softpeanut\.github\.io\/csv-preflight\/pro\.html/);
+  assert.match(issueConfig, /Pro sales are not open/);
+  assert.match(proTerms, /Archived Lightning offer — ordering closed/);
+  assert.match(proTermsKo, /이전 Lightning 판매 조건 — 주문 종료/);
   for (const terms of [proTerms, proTermsKo]) {
+    assert.match(terms, /content="noindex"/);
+    assert.match(terms, /href="pro\.html(?:#ko)?"/);
+    // Preserve the historical purchase contract while removing new order intake.
     assert.match(terms, /15,000/);
     assert.match(terms, /100,000/);
-    assert.match(terms, /20/);
     assert.match(terms, /SHA-256/);
-    assert.match(terms, /Lightning/);
-    assert.match(terms, /CLI/);
   }
-  assert.match(batchTemplate, /This public request is not payment/);
-  assert.match(batchTemplate, /invoice matching the selected tier/);
-  assert.match(batchTemplate, /Team — 100,000 sats — up to 10 named users/);
-  assert.match(batchTemplate, /status endpoint lets the seller verify settlement/);
-  assert.match(batchTemplate, /Do not post CSV content, filenames/);
-  assert.match(batchTemplateKo, /이 공개 요청 자체는 결제가 아닙니다/);
-  assert.match(batchTemplateKo, /선택한 등급에 맞는 이슈 전용 일회용 BOLT11 인보이스/);
-  assert.match(batchTemplateKo, /팀 — 100,000 sats — 하나의 법인 조직 안에서 기명 사용자 최대 10명/);
-  assert.match(batchTemplateKo, /CSV 내용, 파일명, 연락처/);
-  assert.doesNotMatch(batchTemplate, /type: textarea/);
-  assert.doesNotMatch(batchTemplateKo, /type: textarea/);
 });
 
 test("publishes the tested free Action without blurring the Pro boundary", () => {
