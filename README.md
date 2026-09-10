@@ -85,17 +85,17 @@ headers and dynamic columns, so the tool avoids pretending it can reject every u
 
 ## Fixed-scope cleanup pilot
 
-The completed **CSV Preflight Pro offline batch edition** is offered as a 15,000 sat Personal
-license for one user or a 100,000 sat Team license for up to 10 named users in one legal
-organization. Both tiers receive the same completed archive; only the license scope differs. It processes 1–20 local UTF-8 CSV files per run, creates
-comma-separated normalized files, per-file issue reports, and one manifest, and includes the
-generic and bounded Shopify profiles. The same archive includes a Node.js 20+ CLI for local or CI
-use with JSON output, deterministic exit codes, and existing-output protection. The licensed seller-held archive is complete and is not part
-of this public free-tool repository. Buyers request an order without posting data, receive an
-issue-bound single-use BOLT11 invoice matching the selected tier with a written 30-minute payment window, and
-receive the archive through a buyer-only private GitHub repository after verified payment. The
-seller verifies settlement through the invoice status endpoint; no public payment proof is needed.
-Product terms and the separate service scope remain distinct.
+**CSV Preflight Pro 1.2.4 is prepared but not on sale.** The planned one-time prices are $19
+Personal (one individual, including their own business) and $79 Team (up to 10 users working for one
+legal organization). Both tiers deliver the same offline browser and Node.js 20+ CLI archive for
+1–20 UTF-8 files, with generic, Shopify, and WooCommerce profiles. The paid archive is not included
+in this free-tool repository. See the [current product details](https://softpeanut.github.io/csv-preflight/pro.html).
+
+The former Lightning/BOLT11 order route and public license-request forms are retired. Do not send
+a Pro payment or post order, CSV, customer, or payment information in GitHub Issues. The old
+[English](https://softpeanut.github.io/csv-preflight/pro-terms.html) and
+[Korean](https://softpeanut.github.io/csv-preflight/pro-terms-ko.html) terms remain accessible as
+historical records; they do not offer new orders. Existing purchase rights are unchanged.
 
 The checker remains free. A **$29 structural cleanup** covers one CSV up to 1 MB, a normalized CSV,
 and a machine-readable issue report; it excludes schema mapping and revisions. A separate **$99
